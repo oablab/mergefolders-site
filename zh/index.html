@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MergeFolders — 在 macOS 上安全合併資料夾</title>
-<meta name="description" content="MergeFolders 是一款 macOS 應用程式，能將一個資料夾合併到另一個，並以 MD5 驗證處理衝突。不再遺失任何檔案。">
-<link rel="alternate" hreflang="en" href="https://mergefolders.foldic.app/">
-<link rel="alternate" hreflang="zh-Hant" href="https://mergefolders.foldic.app/zh/">
-<link rel="alternate" hreflang="ja" href="https://mergefolders.foldic.app/ja/">
-<link rel="alternate" hreflang="ko" href="https://mergefolders.foldic.app/ko/">
-<link rel="alternate" hreflang="x-default" href="https://mergefolders.foldic.app/">
+<title>Mergic — 在 macOS 上安全合併資料夾</title>
+<meta name="description" content="Mergic 是一款 macOS 應用程式，能將一個資料夾合併到另一個，並以 MD5 驗證處理衝突。不再遺失任何檔案。">
+<link rel="alternate" hreflang="en" href="https://mergic.foldic.app/">
+<link rel="alternate" hreflang="zh-Hant" href="https://mergic.foldic.app/zh/">
+<link rel="alternate" hreflang="ja" href="https://mergic.foldic.app/ja/">
+<link rel="alternate" hreflang="ko" href="https://mergic.foldic.app/ko/">
+<link rel="alternate" hreflang="x-default" href="https://mergic.foldic.app/">
 <style>
   :root {
     --accent: #7E6BC4;
@@ -86,19 +86,19 @@
   document.addEventListener("click", function (event) {
     var link = event.target.closest(".lang a");
     if (!link) return;
-    try { localStorage.setItem("mergefolders-lang", link.getAttribute("data-lang")); } catch (e) {}
+    try { localStorage.setItem("mergic-lang", link.getAttribute("data-lang")); } catch (e) {}
   });
 </script>
 </head>
 <body>
 
 <nav>
-  <a class="brand" href="./">MergeFolders</a>
+  <a class="brand" href="./">Mergic</a>
   <span class="lang"><a class="active" href="./" data-lang="zh">中文</a>|<a href="../ja/" data-lang="ja">日本語</a>|<a href="../ko/" data-lang="ko">한국어</a>|<a href="../?lang=en" data-lang="en">EN</a></span>
 </nav>
 
 <header class="container">
-  <h1>MergeFolders</h1>
+  <h1>Mergic</h1>
   <p class="tagline">將資料夾合併到另一個資料夾。<br>安全可靠。就在你的 Mac 上。</p>
 
   <div class="canvas-demo" aria-hidden="true">
@@ -167,7 +167,7 @@
 
 <footer>
   <div class="container">
-    <p>MergeFolders — macOS 工具程式。</p>
+    <p>Mergic — macOS 工具程式。</p>
     <p class="langs">English · 繁體中文 · 日本語 · 한국어</p>
   </div>
 </footer>

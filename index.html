@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MergeFolders — merge folders safely on macOS</title>
-<meta name="description" content="MergeFolders is a macOS app that merges one folder into another with MD5-verified conflict handling. Never lose a file again.">
-<link rel="alternate" hreflang="en" href="https://mergefolders.foldic.app/">
-<link rel="alternate" hreflang="zh-Hant" href="https://mergefolders.foldic.app/zh/">
-<link rel="alternate" hreflang="ja" href="https://mergefolders.foldic.app/ja/">
-<link rel="alternate" hreflang="ko" href="https://mergefolders.foldic.app/ko/">
-<link rel="alternate" hreflang="x-default" href="https://mergefolders.foldic.app/">
+<title>Mergic — merge folders safely on macOS</title>
+<meta name="description" content="Mergic is a macOS app that merges one folder into another with MD5-verified conflict handling. Never lose a file again.">
+<link rel="alternate" hreflang="en" href="https://mergic.foldic.app/">
+<link rel="alternate" hreflang="zh-Hant" href="https://mergic.foldic.app/zh/">
+<link rel="alternate" hreflang="ja" href="https://mergic.foldic.app/ja/">
+<link rel="alternate" hreflang="ko" href="https://mergic.foldic.app/ko/">
+<link rel="alternate" hreflang="x-default" href="https://mergic.foldic.app/">
 <style>
   :root {
     --accent: #7E6BC4;
@@ -87,7 +87,7 @@
   document.addEventListener("click", function (event) {
     var link = event.target.closest(".lang a");
     if (!link) return;
-    try { localStorage.setItem("mergefolders-lang", link.getAttribute("data-lang")); } catch (e) {}
+    try { localStorage.setItem("mergic-lang", link.getAttribute("data-lang")); } catch (e) {}
   });
 </script>
 <script>
@@ -97,7 +97,7 @@
     var params = new URLSearchParams(location.search);
     if (params.get("lang") === "en") return;
     var saved = null;
-    try { saved = localStorage.getItem("mergefolders-lang"); } catch (e) {}
+    try { saved = localStorage.getItem("mergic-lang"); } catch (e) {}
     if (saved) {
       if (saved !== "en") location.replace(saved + "/");
       return;
@@ -117,12 +117,12 @@
 <body>
 
 <nav>
-  <a class="brand" href="./">MergeFolders</a>
+  <a class="brand" href="./">Mergic</a>
   <span class="lang"><a href="zh/" data-lang="zh">中文</a>|<a href="ja/" data-lang="ja">日本語</a>|<a href="ko/" data-lang="ko">한국어</a>|<a class="active" href="./" data-lang="en">EN</a></span>
 </nav>
 
 <header class="container">
-  <h1>MergeFolders</h1>
+  <h1>Mergic</h1>
   <p class="tagline">Merge one folder into another.<br>Safely. On your Mac.</p>
 
   <div class="canvas-demo" aria-hidden="true">
@@ -193,7 +193,7 @@
 
 <footer>
   <div class="container">
-    <p>MergeFolders — a macOS utility.</p>
+    <p>Mergic — a macOS utility.</p>
     <p class="langs">English · 繁體中文 · 日本語 · 한국어</p>
   </div>
 </footer>
