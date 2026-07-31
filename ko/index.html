@@ -12,21 +12,25 @@
 <link rel="alternate" hreflang="x-default" href="https://mergefolders.foldic.app/">
 <style>
   :root {
-    --bg: #ffffff;
-    --fg: #1d1d1f;
-    --muted: #6e6e73;
-    --card: #f5f5f7;
-    --accent: #0071e3;
-    --border: #d2d2d7;
+    --accent: #7E6BC4;
+    --accent-deep: #453472;
+    --accent-tint: #E5E0F2;
+    --bg: #F3F1F8;
+    --fg: #2E2A40;
+    --muted: #6E6880;
+    --card: #EAE6F2;
+    --border: rgba(69, 52, 114, 0.16);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #000000;
-      --fg: #f5f5f7;
-      --muted: #86868b;
-      --card: #1d1d1f;
-      --accent: #2997ff;
-      --border: #424245;
+      --accent: #9B8AD6;
+      --accent-deep: #B3A5E3;
+      --accent-tint: #2A2440;
+      --bg: #16121F;
+      --fg: #ECE9F5;
+      --muted: #A39CBB;
+      --card: #201B2D;
+      --border: rgba(155, 138, 214, 0.22);
     }
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,11 +46,11 @@
     display: flex; justify-content: space-between; align-items: center;
     max-width: 900px; margin: 0 auto; padding: 16px 24px;
   }
-  .brand { font-weight: 700; font-size: 17px; color: var(--fg); text-decoration: none; }
+  .brand { font-weight: 700; font-size: 17px; color: var(--accent-deep); text-decoration: none; }
   .lang { font-size: 14px; color: var(--muted); }
   .lang a { color: var(--muted); text-decoration: none; padding: 0 6px; }
   .lang a:hover { color: var(--fg); }
-  .lang a.active { color: var(--fg); font-weight: 600; }
+  .lang a.active { color: var(--accent-deep); font-weight: 600; }
   header { padding: 72px 0 48px; text-align: center; }
   header h1 { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
   header .tagline { font-size: 32px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); margin-top: 12px; }
@@ -55,21 +59,21 @@
     margin: 56px auto; max-width: 640px;
   }
   .zone {
-    flex: 1; border: 2px dashed var(--border); border-radius: 16px;
+    flex: 1; border: 2px dashed var(--accent); border-radius: 16px;
     padding: 40px 20px; text-align: center; color: var(--muted);
     background: var(--card); font-size: 15px;
   }
   .zone .icon { font-size: 40px; display: block; margin-bottom: 10px; }
-  .arrow { font-size: 28px; color: var(--muted); }
+  .arrow { font-size: 28px; color: var(--accent); }
   section { padding: 48px 0; border-top: 1px solid var(--border); }
-  h2 { font-size: 32px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.01em; }
+  h2 { font-size: 32px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.01em; color: var(--accent-deep); }
   .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
   .feature { background: var(--card); border-radius: 16px; padding: 24px; }
   .feature h3 { font-size: 18px; margin-bottom: 8px; }
   .feature p { color: var(--muted); font-size: 15px; }
   .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
   .mode { background: var(--card); border-radius: 16px; padding: 28px; }
-  .mode h3 { font-size: 20px; margin-bottom: 10px; }
+  .mode h3 { font-size: 20px; margin-bottom: 10px; color: var(--accent-deep); }
   .mode p { color: var(--muted); font-size: 15px; }
   .mode code {
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
