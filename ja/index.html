@@ -79,6 +79,15 @@
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
     padding: 1px 6px; font-size: 13px;
   }
+  details {
+    background: var(--card); border-radius: 12px; padding: 16px 20px;
+    margin-bottom: 10px; border: 1px solid var(--border);
+  }
+  details summary {
+    font-weight: 600; cursor: pointer; color: var(--accent-deep);
+    font-size: 16px;
+  }
+  details p { color: var(--muted); font-size: 15px; margin-top: 10px; }
   footer { padding: 48px 0 64px; text-align: center; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); }
   .langs { margin-top: 8px; }
 </style>
@@ -173,6 +182,36 @@
         小さな .app ひとつ。</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <h2>よくある質問</h2>
+      <details>
+        <summary>Mergic がファイルを削除・上書きすることはありますか？</summary>
+        <p>MD5 モードではありません — コピー先のファイルが削除・置換されることは決してありません。内容が異なる同名ファイルは name-2.ext として並べてコピーされ、両方が残ります。「常に上書き」モードを明示的に選んだ場合のみ置換され、事前にドライランで確認できます。</p>
+      </details>
+      <details>
+        <summary>ドライランは何をするのですか？</summary>
+        <p>スキャン・比較・競合処理まで、マージの全工程を実行しますが、何も書き込みません。使用される正確なファイル名を含む完全なログが得られるので、想定外は起こりません。</p>
+      </details>
+      <details>
+        <summary>クイックと徹底、どちらを使うべき？</summary>
+        <p>クイックはサイズ＋更新日時で比較し、判別できない場合のみ MD5 を使用。既定の選択で高速です。タイムスタンプが信頼できない場合（カメラのカード、復元したバックアップ）や、かけがえのないデータを検証する場合は徹底を — すべてのファイルをハッシュ検証し、無音の破損も検出します。</p>
+      </details>
+      <details>
+        <summary>同名で内容が異なるファイルはどうなりますか？</summary>
+        <p>コピー元のバージョンが name-2.ext（次は name-3.ext…）としてコピー先のファイルの隣に置かれます。同じマージを再実行しても重複は増えません — 既存の変種は先に内容チェックされます。</p>
+      </details>
+      <details>
+        <summary>別のドライブ間でも使えますか？</summary>
+        <p>はい。同じ APFS ボリューム内ではコピーオンライトのクローンを使用 — 瞬時で容量も消費しません。ドライブをまたぐ場合は通常のコピーを行います。</p>
+      </details>
+      <details>
+        <summary>Mergic がデータを送信することはありますか？</summary>
+        <p>ありません。サンドボックスで動作し、ネットワーク機能も分析機能もなく、選択したフォルダにのみアクセスします。</p>
+      </details>
   </div>
 </section>
 

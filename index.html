@@ -79,6 +79,15 @@
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
     padding: 1px 6px; font-size: 13px;
   }
+  details {
+    background: var(--card); border-radius: 12px; padding: 16px 20px;
+    margin-bottom: 10px; border: 1px solid var(--border);
+  }
+  details summary {
+    font-weight: 600; cursor: pointer; color: var(--accent-deep);
+    font-size: 16px;
+  }
+  details p { color: var(--muted); font-size: 15px; margin-top: 10px; }
   footer { padding: 48px 0 64px; text-align: center; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); }
   .langs { margin-top: 8px; }
 </style>
@@ -199,6 +208,36 @@
         .app bundle.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <h2>FAQ</h2>
+      <details>
+        <summary>Can Mergic ever delete or overwrite my files?</summary>
+        <p>Not in MD5 mode — nothing in the destination is ever deleted or replaced. Conflicting files are copied alongside as name-2.ext, so both versions survive. Only the explicit “Always overwrite” mode replaces files, and you can preview it first with a dry run.</p>
+      </details>
+      <details>
+        <summary>What exactly does dry run do?</summary>
+        <p>It runs the entire merge — scanning, comparing, conflict resolution — but writes nothing. You get the full per-file log with the exact names that would be used, so there are no surprises.</p>
+      </details>
+      <details>
+        <summary>Quick vs Thorough — which should I use?</summary>
+        <p>Quick compares size + modified date and uses MD5 only when they disagree; it's the right default and very fast. Choose Thorough when timestamps can't be trusted (camera cards, restored backups) or when verifying irreplaceable data — it hashes every file and catches silent corruption.</p>
+      </details>
+      <details>
+        <summary>What happens when two files have the same name but different content?</summary>
+        <p>The source version is copied next to the destination's as name-2.ext (then name-3.ext, and so on). Re-running the same merge won't pile up duplicates — existing variants are content-checked first.</p>
+      </details>
+      <details>
+        <summary>Does it work across different drives?</summary>
+        <p>Yes. Merging within the same APFS volume uses copy-on-write clones — instant and space-free. Across drives it performs a regular copy.</p>
+      </details>
+      <details>
+        <summary>Does Mergic send any data anywhere?</summary>
+        <p>No. It's sandboxed, has no network capability, no analytics, and only touches the folders you choose.</p>
+      </details>
   </div>
 </section>
 

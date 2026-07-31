@@ -79,6 +79,15 @@
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
     padding: 1px 6px; font-size: 13px;
   }
+  details {
+    background: var(--card); border-radius: 12px; padding: 16px 20px;
+    margin-bottom: 10px; border: 1px solid var(--border);
+  }
+  details summary {
+    font-weight: 600; cursor: pointer; color: var(--accent-deep);
+    font-size: 16px;
+  }
+  details p { color: var(--muted); font-size: 15px; margin-top: 10px; }
   footer { padding: 48px 0 64px; text-align: center; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); }
   .langs { margin-top: 8px; }
 </style>
@@ -172,6 +181,36 @@
         一個輕巧的 .app。</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <h2>常見問題</h2>
+      <details>
+        <summary>Mergic 會刪除或覆寫我的檔案嗎？</summary>
+        <p>在 MD5 模式下不會 — 目的地的檔案永遠不會被刪除或取代。內容衝突的檔案會以 name-2.ext 的形式複製到旁邊，兩個版本都會保留。只有明確選擇「一律覆寫」模式才會取代檔案，而且可以先用模擬執行預覽。</p>
+      </details>
+      <details>
+        <summary>模擬執行到底做什麼？</summary>
+        <p>它會完整執行整個合併流程 — 掃描、比對、衝突處理 — 但不寫入任何東西。你會看到完整的逐檔記錄，包含將使用的確切檔名，不會有任何意外。</p>
+      </details>
+      <details>
+        <summary>快速與徹底，該選哪個？</summary>
+        <p>快速模式比對大小＋修改日期，只在無法判斷時才用 MD5；是預設選擇，速度很快。當時間戳記不可信（相機記憶卡、還原的備份）或要驗證無可取代的資料時，選徹底模式 — 它會雜湊驗證每個檔案，連無聲損毀都能抓出來。</p>
+      </details>
+      <details>
+        <summary>同名但內容不同的檔案會怎樣？</summary>
+        <p>來源版本會以 name-2.ext（再來是 name-3.ext…）複製到目的地檔案旁邊。重複執行同一次合併不會堆出重複檔案 — 既有的變體會先做內容比對。</p>
+      </details>
+      <details>
+        <summary>可以跨磁碟使用嗎？</summary>
+        <p>可以。在同一個 APFS 磁碟區內合併會使用寫入時複製 — 瞬間完成且不佔空間；跨磁碟則進行一般複製。</p>
+      </details>
+      <details>
+        <summary>Mergic 會傳送任何資料嗎？</summary>
+        <p>不會。它在沙盒中執行、沒有網路能力、沒有分析追蹤，只會存取你選擇的資料夾。</p>
+      </details>
   </div>
 </section>
 
