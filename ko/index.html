@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MergeFolders — merge folders safely on macOS</title>
-<meta name="description" content="MergeFolders is a macOS app that merges one folder into another with MD5-verified conflict handling. Never lose a file again.">
+<title>MergeFolders — macOS에서 폴더를 안전하게 병합</title>
+<meta name="description" content="MergeFolders는 MD5 검증 충돌 처리로 폴더를 다른 폴더에 병합하는 macOS 앱입니다. 더 이상 파일을 잃지 마세요.">
 <link rel="alternate" hreflang="en" href="https://mergefolders.foldic.app/">
 <link rel="alternate" hreflang="zh-Hant" href="https://mergefolders.foldic.app/zh/">
 <link rel="alternate" hreflang="ja" href="https://mergefolders.foldic.app/ja/">
@@ -31,7 +31,7 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: var(--bg);
     color: var(--fg);
     line-height: 1.6;
@@ -79,71 +79,46 @@
   .langs { margin-top: 8px; }
 </style>
 <script>
-  // Remember an explicit language choice.
   document.addEventListener("click", function (event) {
     var link = event.target.closest(".lang a");
     if (!link) return;
     try { localStorage.setItem("mergefolders-lang", link.getAttribute("data-lang")); } catch (e) {}
   });
 </script>
-<script>
-  // First visit only: route to the matching translation. An explicit choice
-  // (stored on click) and ?lang=en both win, so nobody gets trapped.
-  (function () {
-    var params = new URLSearchParams(location.search);
-    if (params.get("lang") === "en") return;
-    var saved = null;
-    try { saved = localStorage.getItem("mergefolders-lang"); } catch (e) {}
-    if (saved) {
-      if (saved !== "en") location.replace(saved + "/");
-      return;
-    }
-    var map = [[/^zh/i, "zh/"], [/^ja/i, "ja/"], [/^ko/i, "ko/"]];
-    var langs = navigator.languages && navigator.languages.length
-      ? navigator.languages : [navigator.language || ""];
-    for (var i = 0; i < langs.length; i++) {
-      for (var j = 0; j < map.length; j++) {
-        if (map[j][0].test(langs[i])) { location.replace(map[j][1]); return; }
-      }
-      if (/^en/i.test(langs[i])) return; // English preferred before any match
-    }
-  })();
-</script>
 </head>
 <body>
 
 <nav>
   <a class="brand" href="./">MergeFolders</a>
-  <span class="lang"><a href="zh/" data-lang="zh">中文</a>|<a href="ja/" data-lang="ja">日本語</a>|<a href="ko/" data-lang="ko">한국어</a>|<a class="active" href="./" data-lang="en">EN</a></span>
+  <span class="lang"><a href="../zh/" data-lang="zh">中文</a>|<a href="../ja/" data-lang="ja">日本語</a>|<a class="active" href="./" data-lang="ko">한국어</a>|<a href="../?lang=en" data-lang="en">EN</a></span>
 </nav>
 
 <header class="container">
   <h1>MergeFolders</h1>
-  <p class="tagline">Merge one folder into another. Safely. On your Mac.</p>
+  <p class="tagline">폴더를 다른 폴더로 병합. 안전하게. 당신의 Mac에서.</p>
 
   <div class="canvas-demo" aria-hidden="true">
-    <div class="zone"><span class="icon">📁</span>Source<br>Drop a folder here</div>
+    <div class="zone"><span class="icon">📁</span>원본<br>여기에 폴더를 드롭</div>
     <div class="arrow">→</div>
-    <div class="zone"><span class="icon">📁</span>Destination<br>Drop a folder here</div>
+    <div class="zone"><span class="icon">📁</span>대상<br>여기에 폴더를 드롭</div>
   </div>
 </header>
 
 <section>
   <div class="container">
-    <h2>Two ways to handle conflicts</h2>
+    <h2>충돌 처리 방식 두 가지</h2>
     <div class="modes">
       <div class="mode">
-        <h3>Always overwrite</h3>
-        <p>The source version replaces the destination version. Simple and
-        predictable — when you know the source is the truth.</p>
+        <h3>항상 덮어쓰기</h3>
+        <p>원본 버전이 대상 버전을 대체합니다. 원본이 정답임을 알고
+        있을 때 — 단순하고 예측 가능합니다.</p>
       </div>
       <div class="mode">
-        <h3>MD5 check — never lose a file</h3>
-        <p>Files with identical content (verified by MD5) are skipped. Files
-        with the same name but different content are copied alongside as
-        <code>name-2.ext</code>, <code>name-3.ext</code>, … The destination
-        never loses data, and re-running the same merge never creates
-        duplicates.</p>
+        <h3>MD5 검사 — 파일을 잃지 않기</h3>
+        <p>내용이 동일한(MD5로 검증) 파일은 건너뜁니다. 이름이 같지만
+        내용이 다른 파일은 <code>name-2.ext</code>, <code>name-3.ext</code>…
+        형태로 나란히 복사됩니다. 이 모드에서는 대상 폴더의 데이터가
+        손실되지 않으며, 같은 병합을 다시 실행해도 중복이 생기지 않습니다.</p>
       </div>
     </div>
   </div>
@@ -151,37 +126,36 @@
 
 <section>
   <div class="container">
-    <h2>Built for real-world folders</h2>
+    <h2>실제 폴더를 위한 설계</h2>
     <div class="features">
       <div class="feature">
-        <h3>🔍 Dry run</h3>
-        <p>Preview every copy, skip, and rename before a single file is
-        touched — with the exact names it would use.</p>
+        <h3>🔍 드라이 런</h3>
+        <p>파일을 건드리기 전에 모든 복사·건너뛰기·이름 변경을 미리
+        보기 — 사용될 파일 이름까지 정확하게.</p>
       </div>
       <div class="feature">
-        <h3>🗂 Millions of files</h3>
-        <p>Live scan counter, batched UI updates, and cancel that works at
-        any phase. Volume metadata folders are skipped automatically.</p>
+        <h3>🗂 수백만 개의 파일</h3>
+        <p>실시간 스캔 카운터, 일괄 UI 업데이트, 어느 단계에서든 취소
+        가능. 볼륨 메타데이터 폴더는 자동으로 건너뜁니다.</p>
       </div>
       <div class="feature">
-        <h3>📋 Filterable log</h3>
-        <p>Every action is logged per file. Filter by copied, overwritten,
-        skipped, renamed, or failed to find the one file that differs.</p>
+        <h3>📋 필터링 가능한 로그</h3>
+        <p>모든 동작이 파일별로 기록됩니다. 복사됨·덮어씀·건너뜀·이름
+        변경됨·실패로 필터링하여 다른 파일 하나를 바로 찾아내세요.</p>
       </div>
       <div class="feature">
-        <h3>🌐 Three languages</h3>
-        <p>English, 繁體中文, and 日本語 — switch anytime with ⌘, in
-        Settings.</p>
+        <h3>🌐 세 가지 언어</h3>
+        <p>English, 繁體中文, 日本語 — 설정(⌘,)에서 언제든지 전환.</p>
       </div>
       <div class="feature">
-        <h3>🧪 Verified engine</h3>
-        <p>The merge engine is pure, UI-free Swift with a full test
-        harness covering conflicts, re-runs, and edge-case filenames.</p>
+        <h3>🧪 검증된 엔진</h3>
+        <p>병합 엔진은 UI가 없는 순수 Swift로, 충돌·재실행·특이한 파일
+        이름을 포괄하는 테스트를 갖추고 있습니다.</p>
       </div>
       <div class="feature">
-        <h3>🍎 Native</h3>
-        <p>SwiftUI, Apple Silicon native, no dependencies. One small
-        .app bundle.</p>
+        <h3>🍎 네이티브</h3>
+        <p>SwiftUI, Apple Silicon 네이티브, 의존성 없음.
+        작은 .app 하나.</p>
       </div>
     </div>
   </div>
@@ -189,7 +163,7 @@
 
 <footer>
   <div class="container">
-    <p>MergeFolders — a macOS utility.</p>
+    <p>MergeFolders — macOS 유틸리티.</p>
     <p class="langs">English · 繁體中文 · 日本語 · 한국어</p>
   </div>
 </footer>

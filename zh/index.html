@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MergeFolders — merge folders safely on macOS</title>
-<meta name="description" content="MergeFolders is a macOS app that merges one folder into another with MD5-verified conflict handling. Never lose a file again.">
+<title>MergeFolders — 在 macOS 上安全合併資料夾</title>
+<meta name="description" content="MergeFolders 是一款 macOS 應用程式，能將一個資料夾合併到另一個，並以 MD5 驗證處理衝突。不再遺失任何檔案。">
 <link rel="alternate" hreflang="en" href="https://mergefolders.foldic.app/">
 <link rel="alternate" hreflang="zh-Hant" href="https://mergefolders.foldic.app/zh/">
 <link rel="alternate" hreflang="ja" href="https://mergefolders.foldic.app/ja/">
@@ -31,7 +31,7 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background: var(--bg);
     color: var(--fg);
     line-height: 1.6;
@@ -79,71 +79,46 @@
   .langs { margin-top: 8px; }
 </style>
 <script>
-  // Remember an explicit language choice.
   document.addEventListener("click", function (event) {
     var link = event.target.closest(".lang a");
     if (!link) return;
     try { localStorage.setItem("mergefolders-lang", link.getAttribute("data-lang")); } catch (e) {}
   });
 </script>
-<script>
-  // First visit only: route to the matching translation. An explicit choice
-  // (stored on click) and ?lang=en both win, so nobody gets trapped.
-  (function () {
-    var params = new URLSearchParams(location.search);
-    if (params.get("lang") === "en") return;
-    var saved = null;
-    try { saved = localStorage.getItem("mergefolders-lang"); } catch (e) {}
-    if (saved) {
-      if (saved !== "en") location.replace(saved + "/");
-      return;
-    }
-    var map = [[/^zh/i, "zh/"], [/^ja/i, "ja/"], [/^ko/i, "ko/"]];
-    var langs = navigator.languages && navigator.languages.length
-      ? navigator.languages : [navigator.language || ""];
-    for (var i = 0; i < langs.length; i++) {
-      for (var j = 0; j < map.length; j++) {
-        if (map[j][0].test(langs[i])) { location.replace(map[j][1]); return; }
-      }
-      if (/^en/i.test(langs[i])) return; // English preferred before any match
-    }
-  })();
-</script>
 </head>
 <body>
 
 <nav>
   <a class="brand" href="./">MergeFolders</a>
-  <span class="lang"><a href="zh/" data-lang="zh">中文</a>|<a href="ja/" data-lang="ja">日本語</a>|<a href="ko/" data-lang="ko">한국어</a>|<a class="active" href="./" data-lang="en">EN</a></span>
+  <span class="lang"><a class="active" href="./" data-lang="zh">中文</a>|<a href="../ja/" data-lang="ja">日本語</a>|<a href="../ko/" data-lang="ko">한국어</a>|<a href="../?lang=en" data-lang="en">EN</a></span>
 </nav>
 
 <header class="container">
   <h1>MergeFolders</h1>
-  <p class="tagline">Merge one folder into another. Safely. On your Mac.</p>
+  <p class="tagline">將資料夾合併到另一個資料夾。安全可靠。就在你的 Mac 上。</p>
 
   <div class="canvas-demo" aria-hidden="true">
-    <div class="zone"><span class="icon">📁</span>Source<br>Drop a folder here</div>
+    <div class="zone"><span class="icon">📁</span>來源<br>把資料夾拖到這裡</div>
     <div class="arrow">→</div>
-    <div class="zone"><span class="icon">📁</span>Destination<br>Drop a folder here</div>
+    <div class="zone"><span class="icon">📁</span>目的地<br>把資料夾拖到這裡</div>
   </div>
 </header>
 
 <section>
   <div class="container">
-    <h2>Two ways to handle conflicts</h2>
+    <h2>兩種衝突處理方式</h2>
     <div class="modes">
       <div class="mode">
-        <h3>Always overwrite</h3>
-        <p>The source version replaces the destination version. Simple and
-        predictable — when you know the source is the truth.</p>
+        <h3>一律覆寫</h3>
+        <p>來源版本會取代目的地版本。簡單且可預期 —
+        當你確定來源才是正確版本時。</p>
       </div>
       <div class="mode">
-        <h3>MD5 check — never lose a file</h3>
-        <p>Files with identical content (verified by MD5) are skipped. Files
-        with the same name but different content are copied alongside as
-        <code>name-2.ext</code>, <code>name-3.ext</code>, … The destination
-        never loses data, and re-running the same merge never creates
-        duplicates.</p>
+        <h3>MD5 檢查 — 絕不遺失檔案</h3>
+        <p>內容相同（經 MD5 驗證）的檔案會被略過。同名但內容不同的檔案，
+        會以 <code>name-2.ext</code>、<code>name-3.ext</code>…
+        的形式複製到旁邊。此模式下目的地永遠不會遺失資料，
+        重複執行同一次合併也不會產生重複檔案。</p>
       </div>
     </div>
   </div>
@@ -151,37 +126,36 @@
 
 <section>
   <div class="container">
-    <h2>Built for real-world folders</h2>
+    <h2>為真實世界的資料夾而生</h2>
     <div class="features">
       <div class="feature">
-        <h3>🔍 Dry run</h3>
-        <p>Preview every copy, skip, and rename before a single file is
-        touched — with the exact names it would use.</p>
+        <h3>🔍 模擬執行</h3>
+        <p>在動到任何檔案之前，預覽每一個複製、略過與重新命名 —
+        連將使用的檔名都一清二楚。</p>
       </div>
       <div class="feature">
-        <h3>🗂 Millions of files</h3>
-        <p>Live scan counter, batched UI updates, and cancel that works at
-        any phase. Volume metadata folders are skipped automatically.</p>
+        <h3>🗂 數百萬檔案</h3>
+        <p>即時掃描計數、批次 UI 更新、任何階段都能取消。
+        自動略過磁碟區中繼資料夾。</p>
       </div>
       <div class="feature">
-        <h3>📋 Filterable log</h3>
-        <p>Every action is logged per file. Filter by copied, overwritten,
-        skipped, renamed, or failed to find the one file that differs.</p>
+        <h3>📋 可篩選記錄</h3>
+        <p>每個檔案的動作都有記錄。可依已複製、已覆寫、已略過、
+        已重新命名或失敗篩選，快速找出那個不同的檔案。</p>
       </div>
       <div class="feature">
-        <h3>🌐 Three languages</h3>
-        <p>English, 繁體中文, and 日本語 — switch anytime with ⌘, in
-        Settings.</p>
+        <h3>🌐 三種語言</h3>
+        <p>English、繁體中文、日本語 — 隨時用 ⌘, 在設定中切換。</p>
       </div>
       <div class="feature">
-        <h3>🧪 Verified engine</h3>
-        <p>The merge engine is pure, UI-free Swift with a full test
-        harness covering conflicts, re-runs, and edge-case filenames.</p>
+        <h3>🧪 經過驗證的引擎</h3>
+        <p>合併引擎是純粹、無 UI 的 Swift，
+        附完整測試，涵蓋衝突、重複執行與各種特殊檔名。</p>
       </div>
       <div class="feature">
-        <h3>🍎 Native</h3>
-        <p>SwiftUI, Apple Silicon native, no dependencies. One small
-        .app bundle.</p>
+        <h3>🍎 原生</h3>
+        <p>SwiftUI、Apple Silicon 原生、零相依套件。
+        一個輕巧的 .app。</p>
       </div>
     </div>
   </div>
@@ -189,7 +163,7 @@
 
 <footer>
   <div class="container">
-    <p>MergeFolders — a macOS utility.</p>
+    <p>MergeFolders — macOS 工具程式。</p>
     <p class="langs">English · 繁體中文 · 日本語 · 한국어</p>
   </div>
 </footer>
