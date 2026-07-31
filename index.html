@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MergeFolders — merge folders safely on macOS</title>
+<meta name="description" content="MergeFolders is a macOS app that merges one folder into another with MD5-verified conflict handling. Never lose a file again.">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1d1d1f;
+    --muted: #6e6e73;
+    --card: #f5f5f7;
+    --accent: #0071e3;
+    --border: #d2d2d7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --fg: #f5f5f7;
+      --muted: #86868b;
+      --card: #1d1d1f;
+      --accent: #2997ff;
+      --border: #424245;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 96px 0 48px; text-align: center; }
+  header h1 { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
+  header .tagline { font-size: 24px; color: var(--muted); margin-top: 12px; }
+  .canvas-demo {
+    display: flex; align-items: center; justify-content: center; gap: 20px;
+    margin: 56px auto; max-width: 640px;
+  }
+  .zone {
+    flex: 1; border: 2px dashed var(--border); border-radius: 16px;
+    padding: 40px 20px; text-align: center; color: var(--muted);
+    background: var(--card); font-size: 15px;
+  }
+  .zone .icon { font-size: 40px; display: block; margin-bottom: 10px; }
+  .arrow { font-size: 28px; color: var(--muted); }
+  section { padding: 48px 0; border-top: 1px solid var(--border); }
+  h2 { font-size: 32px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.01em; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .feature {
+    background: var(--card); border-radius: 16px; padding: 24px;
+  }
+  .feature h3 { font-size: 18px; margin-bottom: 8px; }
+  .feature p { color: var(--muted); font-size: 15px; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .mode { background: var(--card); border-radius: 16px; padding: 28px; }
+  .mode h3 { font-size: 20px; margin-bottom: 10px; }
+  .mode p { color: var(--muted); font-size: 15px; }
+  .mode code {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 1px 6px; font-size: 13px;
+  }
+  footer { padding: 48px 0 64px; text-align: center; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); }
+  .langs { margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header class="container">
+  <h1>MergeFolders</h1>
+  <p class="tagline">Merge one folder into another. Safely. On your Mac.</p>
+
+  <div class="canvas-demo" aria-hidden="true">
+    <div class="zone"><span class="icon">📁</span>Source<br>Drop a folder here</div>
+    <div class="arrow">→</div>
+    <div class="zone"><span class="icon">📁</span>Destination<br>Drop a folder here</div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2>Two ways to handle conflicts</h2>
+    <div class="modes">
+      <div class="mode">
+        <h3>Always overwrite</h3>
+        <p>The source version replaces the destination version. Simple and
+        predictable — when you know the source is the truth.</p>
+      </div>
+      <div class="mode">
+        <h3>MD5 check — never lose a file</h3>
+        <p>Files with identical content (verified by MD5) are skipped. Files
+        with the same name but different content are copied alongside as
+        <code>name-2.ext</code>, <code>name-3.ext</code>, … The destination
+        never loses data, and re-running the same merge never creates
+        duplicates.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Built for real-world folders</h2>
+    <div class="features">
+      <div class="feature">
+        <h3>🔍 Dry run</h3>
+        <p>Preview every copy, skip, and rename before a single file is
+        touched — with the exact names it would use.</p>
+      </div>
+      <div class="feature">
+        <h3>🗂 Millions of files</h3>
+        <p>Live scan counter, batched UI updates, and cancel that works at
+        any phase. Volume metadata folders are skipped automatically.</p>
+      </div>
+      <div class="feature">
+        <h3>📋 Filterable log</h3>
+        <p>Every action is logged per file. Filter by copied, overwritten,
+        skipped, renamed, or failed to find the one file that differs.</p>
+      </div>
+      <div class="feature">
+        <h3>🌐 Three languages</h3>
+        <p>English, 繁體中文, and 日本語 — switch anytime with ⌘, in
+        Settings.</p>
+      </div>
+      <div class="feature">
+        <h3>🧪 Verified engine</h3>
+        <p>The merge engine is pure, UI-free Swift with a full test
+        harness covering conflicts, re-runs, and edge-case filenames.</p>
+      </div>
+      <div class="feature">
+        <h3>🍎 Native</h3>
+        <p>SwiftUI, Apple Silicon native, no dependencies. One small
+        .app bundle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>MergeFolders — a macOS utility.</p>
+    <p class="langs">English · 繁體中文 · 日本語</p>
+  </div>
+</footer>
+
+</body>
+</html>
