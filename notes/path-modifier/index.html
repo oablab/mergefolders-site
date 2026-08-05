@@ -152,8 +152,8 @@
     <p>That separation matters more than it looks, because a modifier makes many-to-one mappings possible: two different <code>IMG_0001.JPG</code> from two cards can now compute the same destination path. The existing machinery resolves exactly that case — hash check, then rename — with no new rules to learn. And dry run shows every <code>source → computed</code> path before a single byte moves.</p>
 
     <h2>If you speak AWS</h2>
-    <p>If you are an AWS person, you have seen this shape before: Kinesis Data Firehose lets a Lambda function transform each batch <em>in flight</em>, between the producer and the delivery destination. A declarative transform stage between a source and a sink, with an explicit failure policy. That shape has existed in data engineering for a decade — I just had not seen anyone put it in a folder-merge app, even though the need is as old as <code>DCIM/100CANON</code>.</p>
-    <p>Well then: nobody made it, so I did. Scratching my own itch first.</p>
+    <p>If you are an AWS person, you have seen this shape before: Kinesis Data Firehose lets a Lambda function transform each batch <em>in flight</em>, between the producer and the delivery destination. A declarative transform stage between a source and a sink, with an explicit failure policy. That shape has existed in data engineering for a decade — we just had not seen anyone put it in a folder-merge app, even though the need is as old as <code>DCIM/100CANON</code>.</p>
+    <p>Well then: nobody made it, so we did. Scratching our own itch first.</p>
 
     <div class="callout"><strong>The modifier ships with the next Mergic update.</strong> The engine behind it is pure, UI-free Swift with a test suite covering template parsing, per-token fallbacks, many-to-one collisions, idempotent re-runs, and EXIF extraction from real files. Custom tokens and hooks are on the list.</div>
     <p class="outro">Mergic merges folders safely on macOS — <a href="/">mergic.foldic.app</a>.</p>
@@ -174,7 +174,7 @@
     <img class="shot" src="canvas.png" alt="Mergic 畫布：來源 → 修飾器 → 目的地" width="1600" height="1006" loading="lazy">
 
     <h2>SD 卡，終於</h2>
-    <p>讓我動手做這個功能的場景：相機拍好的 SD 卡——甚至一整顆行動 SSD——插進電腦。Source 是卡，Destination 是你的硬碟或 NAS，中間過一個最簡單的模板：</p>
+    <p>讓我們動手做這個功能的場景：相機拍好的 SD 卡——甚至一整顆行動 SSD——插進電腦。Source 是卡，Destination 是你的硬碟或 NAS，中間過一個最簡單的模板：</p>
     <p><code>${YEAR}/${MONTH}/${DAY}/${ORIGINAL_FILENAME}</code></p>
     <p>一跑，你剛剛拍的東西就按年月日各就各位——<code>${YEAR}</code> 會優先讀 EXIF 的 <code>DateTimeOriginal</code>，沒有才退回檔案本身的日期。再加上 <code>${exif:camera-brand}</code> 或 <code>${exif:camera-model}</code>，兩台相機拍的照片在飛行途中就自動分好資料夾。所有東西自動歸位，超級舒服。</p>
     <p>編輯器會拿來源資料夾裡<em>真實的檔案</em>即時預覽模板——你邊打字邊看到實際會產生的路徑，而不是看文件猜。</p>
@@ -188,8 +188,8 @@
     <p>這個分離比看起來重要，因為修飾器讓「多對一」成為可能：兩張卡裡兩個不同的 <code>IMG_0001.JPG</code>，現在可能算出同一個目的地路徑。而既有的機制處理的正是這種情況——先比雜湊、再改名——不需要學任何新規則。模擬執行也會在動到任何一個位元組之前，把每一筆 <code>來源 → 計算後路徑</code> 攤開給你看。</p>
 
     <h2>如果你是 AWS 技術宅</h2>
-    <p>如果你熟 AWS，你一定見過這個形狀：Kinesis Data Firehose 可以掛一個 Lambda，在資料從生產者送往目的地的<em>飛行途中</em>逐批轉換。一個宣告式的轉換階段，夾在 source 和 sink 之間，附帶明確的失敗策略。這個形狀在資料工程裡存在十年了——我只是沒看到有人把它做進資料夾合併的 App，明明這需求跟 <code>DCIM/100CANON</code> 一樣古老。</p>
-    <p>那好，沒人做，那我做。先滿足自身需求再說。</p>
+    <p>如果你熟 AWS，你一定見過這個形狀：Kinesis Data Firehose 可以掛一個 Lambda，在資料從生產者送往目的地的<em>飛行途中</em>逐批轉換。一個宣告式的轉換階段，夾在 source 和 sink 之間，附帶明確的失敗策略。這個形狀在資料工程裡存在十年了——我們只是沒看到有人把它做進資料夾合併的 App，明明這需求跟 <code>DCIM/100CANON</code> 一樣古老。</p>
+    <p>那好，沒人做，那我們做。先滿足我們自己的需求再說。</p>
 
     <div class="callout"><strong>修飾器會隨 Mergic 下一個更新出貨。</strong>背後的引擎是純粹、無 UI 的 Swift，測試涵蓋模板解析、逐代碼 fallback、多對一碰撞、冪等重跑、以及從真實檔案抽取 EXIF。自定義代碼與 hooks 已經在清單上。</div>
     <p class="outro">Mergic 在 macOS 上安全合併資料夾 — <a href="/zh/">mergic.foldic.app</a>。</p>
@@ -225,7 +225,7 @@
 
     <h2>AWS を話せるなら</h2>
     <p>AWS に親しんでいるなら、この形には見覚えがあるはず。Kinesis Data Firehose は Lambda 関数で各バッチを<em>飛行中に</em>変換できます。プロデューサと配信先のあいだに置かれた、明示的な失敗ポリシーを持つ宣言的な変換ステージ。この形はデータエンジニアリングでは十年前からあるのに、フォルダマージのアプリに入れた人を見たことがありませんでした。<code>DCIM/100CANON</code> と同じくらい古いニーズなのに。</p>
-    <p>誰もやらないなら、私がやる。まずは自分のかゆいところから。</p>
+    <p>誰もやらないなら、私たちがやる。まずは自分たちのかゆいところから。</p>
 
     <div class="callout"><strong>モディファイアは Mergic の次のアップデートで出荷されます。</strong>背後のエンジンは純粋な UI なしの Swift で、テンプレート解析、トークンごとのフォールバック、多対一の衝突、冪等な再実行、実ファイルからの EXIF 抽出までテストが揃っています。カスタムトークンとフックはリストに載っています。</div>
     <p class="outro">Mergic は macOS でフォルダを安全にマージします — <a href="/ja/">mergic.foldic.app</a>。</p>
@@ -261,7 +261,7 @@
 
     <h2>AWS를 할 줄 안다면</h2>
     <p>AWS에 익숙하다면 이 모양을 본 적이 있을 겁니다. Kinesis Data Firehose는 Lambda 함수로 각 배치를 <em>비행 중에</em> 변환할 수 있습니다. 생산자와 전달 대상 사이에 놓인, 명시적 실패 정책을 가진 선언적 변환 단계. 이 모양은 데이터 엔지니어링에 십 년 전부터 있었는데, 폴더 병합 앱에 넣은 사람은 보지 못했습니다. <code>DCIM/100CANON</code>만큼이나 오래된 필요인데도요.</p>
-    <p>좋습니다. 아무도 안 만들면 내가 만듭니다. 우선 내 가려운 곳부터.</p>
+    <p>좋습니다. 아무도 안 만들면 우리가 만듭니다. 우선 우리 자신의 필요부터.</p>
 
     <div class="callout"><strong>모디파이어는 Mergic의 다음 업데이트와 함께 출시됩니다.</strong> 그 뒤의 엔진은 순수한 UI 없는 Swift로, 템플릿 파싱, 토큰별 폴백, 다대일 충돌, 멱등 재실행, 실제 파일에서의 EXIF 추출까지 테스트가 갖춰져 있습니다. 커스텀 토큰과 훅은 목록에 올라 있습니다.</div>
     <p class="outro">Mergic은 macOS에서 폴더를 안전하게 병합합니다 — <a href="/">mergic.foldic.app</a>.</p>
