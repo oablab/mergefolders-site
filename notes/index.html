@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes — Mergic</title>
+  <meta name="description" content="Development notes from building Mergic, the safe folder-merge app for macOS.">
+  <style>
+    :root {
+      --accent: #7E6BC4;
+      --accent-deep: #453472;
+      --accent-tint: #E5E0F2;
+      --ink: #2E2A40;
+      --muted: #6E6880;
+      --bg: #F3F1F8;
+      --card: #EAE6F2;
+      --border: rgba(69, 52, 114, 0.16);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --accent: #9B8AD6;
+        --accent-deep: #B3A5E3;
+        --accent-tint: #2A2440;
+        --ink: #ECE9F5;
+        --muted: #A39CBB;
+        --bg: #16121F;
+        --card: #201B2D;
+        --border: rgba(155, 138, 214, 0.22);
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang TC", "Segoe UI", Roboto, sans-serif;
+      color: var(--ink); background: var(--bg); line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 860px; margin: 0 auto; padding: 0.9rem 1.5rem;
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    nav .brand { font-weight: 700; font-size: 1.05rem; text-decoration: none; color: var(--accent-deep); }
+    .lang-switch {
+      display: inline-flex; gap: 0.25rem; padding: 0.22rem; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .lang-switch button {
+      font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      background: none; border: 0; cursor: pointer;
+      padding: 0.3rem 0.75rem; border-radius: 999px;
+    }
+    .lang-switch button[aria-selected="true"] {
+      background: var(--bg); color: var(--ink);
+      box-shadow: 0 1px 3px rgba(46, 42, 64, 0.14);
+    }
+    main { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    main[hidden] { display: none; }
+    h1 { font-size: clamp(1.7rem, 4vw, 2.2rem); letter-spacing: -0.015em; color: var(--accent-deep); }
+    .sub { color: var(--muted); margin-top: 0.5rem; }
+    .note {
+      display: block; text-decoration: none; color: inherit;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.2rem 1.4rem; margin-top: 1.6rem;
+    }
+    .note:hover { border-color: var(--accent); }
+    .note h2 { font-size: 1.15rem; color: var(--accent-deep); }
+    .note .date { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+    .note p { color: var(--muted); font-size: 0.95rem; margin-top: 0.5rem; }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.2rem 1.5rem; text-align: center;
+      color: var(--muted); font-size: 0.88rem;
+    }
+    footer a { color: var(--accent-deep); text-decoration: none; margin: 0 0.4rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Mergic</a>
+    <div class="lang-switch" role="tablist" aria-label="Language">
+      <button type="button" role="tab" data-lang-tab="en" aria-selected="true">EN</button>
+      <button type="button" role="tab" data-lang-tab="zh" aria-selected="false">中文</button>
+      <button type="button" role="tab" data-lang-tab="ja" aria-selected="false">日本語</button>
+      <button type="button" role="tab" data-lang-tab="ko" aria-selected="false">한국어</button>
+    </div>
+  </nav>
+
+  <main data-lang-page="en">
+    <h1>Development notes</h1>
+    <p class="sub">Notes from building Mergic.</p>
+    <a class="note" href="/notes/path-modifier/?lang=en">
+      <h2>A modifier between source and destination</h2>
+      <p class="date">August 5, 2026</p>
+      <p>Copying is a pipeline — so we put a template stage in the middle. Capture date, camera brand, per-token fallbacks, and the same conflict guarantees.</p>
+    </a>
+  </main>
+
+  <main data-lang-page="zh" hidden>
+    <h1>開發筆記</h1>
+    <p class="sub">打造 Mergic 的過程記錄。</p>
+    <a class="note" href="/notes/path-modifier/?lang=zh">
+      <h2>在來源與目的地之間，放一個修飾器</h2>
+      <p class="date">2026 年 8 月 5 日</p>
+      <p>複製是一條管線——所以我們在中間放了一個模板階段。拍攝日期、相機品牌、逐代碼 fallback，衝突保證一個字都沒改。</p>
+    </a>
+  </main>
+
+  <main data-lang-page="ja" hidden>
+    <h1>開発ノート</h1>
+    <p class="sub">Mergic 開発の記録。</p>
+    <a class="note" href="/notes/path-modifier/?lang=ja">
+      <h2>コピー元とコピー先のあいだに、モディファイアを</h2>
+      <p class="date">2026年8月5日</p>
+      <p>コピーはパイプライン——だから真ん中にテンプレート段を置きました。撮影日、カメラブランド、トークンごとのフォールバック。衝突の保証はそのまま。</p>
+    </a>
+  </main>
+
+  <main data-lang-page="ko" hidden>
+    <h1>개발 노트</h1>
+    <p class="sub">Mergic을 만드는 과정의 기록.</p>
+    <a class="note" href="/notes/path-modifier/?lang=ko">
+      <h2>원본과 대상 사이에, 모디파이어를</h2>
+      <p class="date">2026년 8월 5일</p>
+      <p>복사는 파이프라인 — 그래서 중간에 템플릿 단계를 두었습니다. 촬영 날짜, 카메라 브랜드, 토큰별 폴백, 충돌 보장은 그대로.</p>
+    </a>
+  </main>
+
+  <footer>
+    © 2026 Mergic · <a href="/">mergic.foldic.app</a> · <a href="/privacy/">Privacy</a>
+  </footer>
+
+  <script>
+    (function () {
+      var LANGS = ["en", "zh", "ja", "ko"];
+      function setLang(lang, remember) {
+        if (LANGS.indexOf(lang) === -1) lang = "en";
+        document.querySelectorAll("[data-lang-page]").forEach(function (page) {
+          page.hidden = page.getAttribute("data-lang-page") !== lang;
+        });
+        document.querySelectorAll("[data-lang-tab]").forEach(function (tab) {
+          tab.setAttribute("aria-selected", String(tab.getAttribute("data-lang-tab") === lang));
+        });
+        document.documentElement.lang = lang === "zh" ? "zh-Hant" : lang;
+        if (remember) {
+          try { localStorage.setItem("mergic-notes-lang", lang); } catch (e) {}
+        }
+      }
+      document.querySelectorAll("[data-lang-tab]").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          setLang(tab.getAttribute("data-lang-tab"), true);
+        });
+      });
+      var initial = null;
+      var param = new URLSearchParams(location.search).get("lang");
+      if (param && LANGS.indexOf(param) !== -1) initial = param;
+      if (!initial) {
+        try { initial = localStorage.getItem("mergic-notes-lang"); } catch (e) {}
+      }
+      if (!initial) {
+        var siteLang = null;
+        try { siteLang = localStorage.getItem("mergic-lang"); } catch (e) {}
+        if (siteLang && LANGS.indexOf(siteLang) !== -1) initial = siteLang;
+      }
+      if (!initial) {
+        var langs = navigator.languages && navigator.languages.length
+          ? navigator.languages : [navigator.language || ""];
+        for (var i = 0; i < langs.length && !initial; i++) {
+          if (/^zh/i.test(langs[i])) initial = "zh";
+          else if (/^ja/i.test(langs[i])) initial = "ja";
+          else if (/^ko/i.test(langs[i])) initial = "ko";
+          else if (/^en/i.test(langs[i])) initial = "en";
+        }
+      }
+      setLang(initial || "en", false);
+    })();
+  </script>
+</body>
+</html>

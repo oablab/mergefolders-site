@@ -55,9 +55,17 @@
   header h1 { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
   header .tagline { font-size: 32px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); margin-top: 12px; }
   .canvas-demo {
-    display: flex; align-items: center; justify-content: center; gap: 20px;
-    margin: 56px auto; max-width: 640px;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    margin: 56px auto; max-width: 760px;
   }
+  .zone.mod { flex: 0.75; border-style: solid; padding: 28px 12px; }
+  .zone .tpl {
+    display: block; margin-top: 8px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px; color: var(--accent); word-break: break-all;
+  }
+  .feature a { color: var(--accent-deep); }
+  footer a { color: var(--accent-deep); text-decoration: none; }
   .zone {
     flex: 1; border: 2px dashed var(--accent); border-radius: 16px;
     padding: 40px 20px; text-align: center; color: var(--muted);
@@ -113,6 +121,8 @@
   <div class="canvas-demo" aria-hidden="true">
     <div class="zone"><span class="icon">📁</span>원본<br>여기에 폴더를 드롭</div>
     <div class="arrow">→</div>
+    <div class="zone mod"><span class="icon">🪄</span>모디파이어<span class="tpl">${YEAR}/${MONTH}/${ORIGINAL_FILENAME}</span></div>
+    <div class="arrow">→</div>
     <div class="zone"><span class="icon">📁</span>대상<br>여기에 폴더를 드롭</div>
   </div>
 </header>
@@ -141,6 +151,13 @@
   <div class="container">
     <h2>실제 폴더를 위한 설계</h2>
     <div class="features">
+      <div class="feature">
+        <h3>🪄 경로 모디파이어</h3>
+        <p>원본과 대상 사이에 템플릿을 —
+        <code>${YEAR}/${MONTH}/${exif:camera-brand|Unknown}/…</code> —
+        사진이 촬영 날짜와 카메라별로 지나가면서 자동 정리됩니다.
+        토큰별 폴백은 당신의 선택. <a href="/notes/path-modifier/?lang=ko">설계 노트 읽기 →</a></p>
+      </div>
       <div class="feature">
         <h3>🔍 드라이 런</h3>
         <p>파일을 건드리기 전에 모든 복사·건너뛰기·이름 변경을 미리
@@ -217,7 +234,7 @@
 
 <footer>
   <div class="container">
-    <p>Mergic — macOS 유틸리티.</p>
+    <p>Mergic — macOS 유틸리티. · <a href="/notes/?lang=ko">개발 노트</a></p>
     <p class="langs">English · 繁體中文 · 日本語 · 한국어</p>
   </div>
 </footer>

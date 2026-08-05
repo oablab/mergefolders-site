@@ -55,9 +55,17 @@
   header h1 { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
   header .tagline { font-size: 32px; font-weight: 700; letter-spacing: -0.01em; color: var(--muted); margin-top: 12px; }
   .canvas-demo {
-    display: flex; align-items: center; justify-content: center; gap: 20px;
-    margin: 56px auto; max-width: 640px;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    margin: 56px auto; max-width: 760px;
   }
+  .zone.mod { flex: 0.75; border-style: solid; padding: 28px 12px; }
+  .zone .tpl {
+    display: block; margin-top: 8px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px; color: var(--accent); word-break: break-all;
+  }
+  .feature a { color: var(--accent-deep); }
+  footer a { color: var(--accent-deep); text-decoration: none; }
   .zone {
     flex: 1; border: 2px dashed var(--accent); border-radius: 16px;
     padding: 40px 20px; text-align: center; color: var(--muted);
@@ -113,6 +121,8 @@
   <div class="canvas-demo" aria-hidden="true">
     <div class="zone"><span class="icon">📁</span>來源<br>把資料夾拖到這裡</div>
     <div class="arrow">→</div>
+    <div class="zone mod"><span class="icon">🪄</span>修飾器<span class="tpl">${YEAR}/${MONTH}/${ORIGINAL_FILENAME}</span></div>
+    <div class="arrow">→</div>
     <div class="zone"><span class="icon">📁</span>目的地<br>把資料夾拖到這裡</div>
   </div>
 </header>
@@ -141,6 +151,13 @@
   <div class="container">
     <h2>為真實世界的資料夾而生</h2>
     <div class="features">
+      <div class="feature">
+        <h3>🪄 路徑修飾器</h3>
+        <p>在來源與目的地之間放一個模板 —
+        <code>${YEAR}/${MONTH}/${exif:camera-brand|Unknown}/…</code> —
+        照片在飛行途中就按拍攝日期與相機自動歸位。
+        每個代碼的 fallback 由你決定。<a href="/notes/path-modifier/?lang=zh">閱讀設計筆記 →</a></p>
+      </div>
       <div class="feature">
         <h3>🔍 模擬執行</h3>
         <p>在動到任何檔案之前，預覽每一個複製、略過與重新命名 —
@@ -216,7 +233,7 @@
 
 <footer>
   <div class="container">
-    <p>Mergic — macOS 工具程式。</p>
+    <p>Mergic — macOS 工具程式。 · <a href="/notes/?lang=zh">開發筆記</a></p>
     <p class="langs">English · 繁體中文 · 日本語 · 한국어</p>
   </div>
 </footer>

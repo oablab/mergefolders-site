@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A modifier between source and destination — Mergic Notes</title>
+  <meta name="description" content="Merging folders looks trivially simple — and is everyone's nightmare. The new path modifier puts a template stage between source and destination: ${YEAR}/${MONTH}/${exif:camera-brand}/… with per-token fallbacks.">
+  <meta property="og:title" content="A modifier between source and destination">
+  <meta property="og:description" content="A template stage between source and destination: capture date, camera brand, per-token fallbacks — and the same conflict guarantees.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://mergic.foldic.app/notes/path-modifier/canvas.png">
+  <meta property="og:url" content="https://mergic.foldic.app/notes/path-modifier/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mergic.foldic.app/notes/path-modifier/canvas.png">
+  <style>
+    :root {
+      --accent: #7E6BC4;
+      --accent-deep: #453472;
+      --accent-tint: #E5E0F2;
+      --ink: #2E2A40;
+      --muted: #6E6880;
+      --bg: #F3F1F8;
+      --card: #EAE6F2;
+      --border: rgba(69, 52, 114, 0.16);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --accent: #9B8AD6;
+        --accent-deep: #B3A5E3;
+        --accent-tint: #2A2440;
+        --ink: #ECE9F5;
+        --muted: #A39CBB;
+        --bg: #16121F;
+        --card: #201B2D;
+        --border: rgba(155, 138, 214, 0.22);
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang TC", "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.72;
+      -webkit-font-smoothing: antialiased;
+    }
+    nav {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 860px; margin: 0 auto; padding: 0.9rem 1.5rem;
+      backdrop-filter: saturate(180%) blur(16px);
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    nav .brand { font-weight: 700; font-size: 1.05rem; text-decoration: none; color: var(--accent-deep); }
+    .lang-switch {
+      display: inline-flex; gap: 0.25rem;
+      padding: 0.22rem; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .lang-switch button {
+      font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      background: none; border: 0; cursor: pointer;
+      padding: 0.3rem 0.75rem; border-radius: 999px;
+    }
+    .lang-switch button[aria-selected="true"] {
+      background: var(--bg); color: var(--ink);
+      box-shadow: 0 1px 3px rgba(46, 42, 64, 0.14);
+    }
+    main { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    main[hidden] { display: none; }
+    .back { display: inline-block; color: var(--muted); text-decoration: none; font-size: 0.88rem; margin-bottom: 1.6rem; }
+    .back:hover { color: var(--accent-deep); }
+    h1 {
+      font-size: clamp(1.9rem, 4.6vw, 2.5rem);
+      line-height: 1.15; letter-spacing: -0.015em; font-weight: 700;
+    }
+    .byline { color: var(--muted); font-size: 0.9rem; margin-top: 0.7rem; }
+    h2 {
+      font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em;
+      margin: 2.6rem 0 0.8rem; color: var(--accent-deep);
+    }
+    p { margin-top: 1rem; font-size: 1.02rem; }
+    .lede { font-size: 1.1rem; }
+    ul { margin-top: 0.8rem; padding-left: 1.3rem; }
+    li { margin-bottom: 0.6rem; }
+    li::marker { color: var(--accent); }
+    strong { color: var(--accent-deep); }
+    code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.86em; background: var(--card);
+      border: 1px solid var(--border); border-radius: 5px; padding: 0.08em 0.35em;
+    }
+    .shot {
+      width: 100%; height: auto; margin-top: 1.6rem;
+      border-radius: 12px; border: 1px solid var(--border);
+      box-shadow: 0 6px 24px rgba(46, 42, 64, 0.12);
+    }
+    .callout {
+      background: var(--accent-tint); border-radius: 14px;
+      padding: 1.1rem 1.4rem; margin-top: 2.4rem;
+      font-size: 1.02rem;
+    }
+    .callout strong { color: var(--accent-deep); }
+    .outro { color: var(--muted); font-size: 0.95rem; }
+    .outro a { color: var(--accent-deep); }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.2rem 1.5rem; text-align: center;
+      color: var(--muted); font-size: 0.88rem;
+    }
+    footer a { color: var(--accent-deep); text-decoration: none; margin: 0 0.4rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Mergic</a>
+    <div class="lang-switch" role="tablist" aria-label="Language">
+      <button type="button" role="tab" data-lang-tab="en" aria-selected="true">EN</button>
+      <button type="button" role="tab" data-lang-tab="zh" aria-selected="false">中文</button>
+      <button type="button" role="tab" data-lang-tab="ja" aria-selected="false">日本語</button>
+      <button type="button" role="tab" data-lang-tab="ko" aria-selected="false">한국어</button>
+    </div>
+  </nav>
+
+  <!-- ============================== EN ============================== -->
+  <main data-lang-page="en">
+    <a class="back" href="/notes/">← Notes</a>
+    <h1>A modifier between source and destination</h1>
+    <p class="byline">August 5, 2026 · Mergic development notes</p>
+
+    <p class="lede">Merging one folder into another looks trivially simple. It is also, quietly, everyone's nightmare.</p>
+    <p>When you have to fold several directories together, what is your strategy? ⌘C, ⌘V, overwrite and hope? Or keep an extra copy of everything "just in case," and end up with a disk full of duplicates you will never dare to delete? Mergic exists because "copy" is only solved when you can say precisely what happens on a conflict — how a conflict is even detected, and what "the same file" actually means.</p>
+
+    <h2>Copying is a pipeline</h2>
+    <p>Once conflicts are handled, a folder merge stops being one action and becomes stages: read from the source, decide what happens on a collision, write to the destination. And the moment you draw it as a pipeline, an obvious question appears: why can't something sit <em>in the middle</em> and transform each file in flight — starting with where it lands?</p>
+    <p>That middle stage is the new <strong>modifier</strong>. It is a node on the canvas now, between Source and Destination, exactly where it lives conceptually.</p>
+    <img class="shot" src="canvas.png" alt="Mergic canvas: Source → Modifier → Destination" width="1600" height="1006" loading="lazy">
+
+    <h2>The SD card, finally</h2>
+    <p>The scenario that made me build this: a camera's SD card — or an entire portable SSD — plugged into the Mac. Source is the card. Destination is your disk or NAS. In between, the simplest possible template:</p>
+    <p><code>${YEAR}/${MONTH}/${DAY}/${ORIGINAL_FILENAME}</code></p>
+    <p>Run it, and everything you just shot files itself away by capture date — <code>${YEAR}</code> reads EXIF <code>DateTimeOriginal</code> when the file has one, falling back to the file's own dates when it doesn't. Add <code>${exif:camera-brand}</code> or <code>${exif:camera-model}</code> and the shots from two cameras sort themselves into separate folders on the way through. Everything lands where it belongs, automatically. It is extremely satisfying to watch.</p>
+    <p>The editor previews the template against real files from your source folder as you type, so you see actual paths — not documentation — before anything runs.</p>
+    <img class="shot" src="editor.png" alt="The modifier editor with template, token palette, and live preview" width="1600" height="1006" loading="lazy">
+
+    <h2>When a token cannot be resolved</h2>
+    <p>A text file has no camera brand. What then? That call belongs to you, per token: <code>${exif:camera-brand|Unknown}</code> sends brandless files to <code>Unknown/</code>; <code>${exif:camera-brand|}</code> collapses the folder level entirely. And if you give no fallback at all, the file is <strong>logged as failed and skipped</strong> — Mergic will not silently guess a location for your data. An organizer that scatters files by guessing is worse than no organizer.</p>
+
+    <h2>Conflicts do not change</h2>
+    <p>The modifier decides <em>where</em> a file lands. The conflict strategy still decides <em>what happens</em> if something is already there — and it is untouched. In MD5 mode the destination never loses a file: identical content is skipped, different content arrives as <code>name-2.ext</code>, and re-running the same merge stays idempotent.</p>
+    <p>That separation matters more than it looks, because a modifier makes many-to-one mappings possible: two different <code>IMG_0001.JPG</code> from two cards can now compute the same destination path. The existing machinery resolves exactly that case — hash check, then rename — with no new rules to learn. And dry run shows every <code>source → computed</code> path before a single byte moves.</p>
+
+    <h2>If you speak AWS</h2>
+    <p>If you are an AWS person, you have seen this shape before: Kinesis Data Firehose lets a Lambda function transform each batch <em>in flight</em>, between the producer and the delivery destination. A declarative transform stage between a source and a sink, with an explicit failure policy. That shape has existed in data engineering for a decade — I just had not seen anyone put it in a folder-merge app, even though the need is as old as <code>DCIM/100CANON</code>.</p>
+    <p>Well then: nobody made it, so I did. Scratching my own itch first.</p>
+
+    <div class="callout"><strong>The modifier ships with the next Mergic update.</strong> The engine behind it is pure, UI-free Swift with a test suite covering template parsing, per-token fallbacks, many-to-one collisions, idempotent re-runs, and EXIF extraction from real files. Custom tokens and hooks are on the list.</div>
+    <p class="outro">Mergic merges folders safely on macOS — <a href="/">mergic.foldic.app</a>.</p>
+  </main>
+
+  <!-- ============================== ZH ============================== -->
+  <main data-lang-page="zh" hidden>
+    <a class="back" href="/notes/">← 開發筆記</a>
+    <h1>在來源與目的地之間，放一個修飾器</h1>
+    <p class="byline">2026 年 8 月 5 日 · Mergic 開發筆記</p>
+
+    <p class="lede">把一個資料夾合併進另一個資料夾——看起來超級簡單對吧？但卻是每個人都有的惡夢。</p>
+    <p>當你要把好幾個目錄合併在一起，你的策略是什麼？⌘C、⌘V，直接蓋過去然後祈禱？還是寧可犧牲空間多留一份副本，最後硬碟裡堆滿一輩子不敢刪的重複檔案？Mergic 之所以存在，就是因為「複製」這件事，只有在你能精確回答「衝突怎麼辦」的時候才算真正解決——怎麼判斷是衝突、「同一個檔案」到底是什麼意思。</p>
+
+    <h2>複製是一條管線</h2>
+    <p>衝突處理好之後，資料夾合併就不再是一個動作，而是幾個階段：從來源讀、在碰撞時做決定、寫進目的地。一旦把它畫成管線，一個明顯的問題就冒出來了：為什麼不能有個東西站在<em>中間</em>，在檔案飛行途中（in-flight）修改它——先從它要降落在哪裡開始？</p>
+    <p>那個中間的階段，就是新的<strong>修飾器</strong>。它現在是畫布上的一個節點，就在來源與目的地之間——概念上它本來就住在那裡。</p>
+    <img class="shot" src="canvas.png" alt="Mergic 畫布：來源 → 修飾器 → 目的地" width="1600" height="1006" loading="lazy">
+
+    <h2>SD 卡，終於</h2>
+    <p>讓我動手做這個功能的場景：相機拍好的 SD 卡——甚至一整顆行動 SSD——插進電腦。Source 是卡，Destination 是你的硬碟或 NAS，中間過一個最簡單的模板：</p>
+    <p><code>${YEAR}/${MONTH}/${DAY}/${ORIGINAL_FILENAME}</code></p>
+    <p>一跑，你剛剛拍的東西就按年月日各就各位——<code>${YEAR}</code> 會優先讀 EXIF 的 <code>DateTimeOriginal</code>，沒有才退回檔案本身的日期。再加上 <code>${exif:camera-brand}</code> 或 <code>${exif:camera-model}</code>，兩台相機拍的照片在飛行途中就自動分好資料夾。所有東西自動歸位，超級舒服。</p>
+    <p>編輯器會拿來源資料夾裡<em>真實的檔案</em>即時預覽模板——你邊打字邊看到實際會產生的路徑，而不是看文件猜。</p>
+    <img class="shot" src="editor.png" alt="修飾器編輯器：模板、代碼面板與即時預覽" width="1600" height="1006" loading="lazy">
+
+    <h2>代碼解析不出來的時候</h2>
+    <p>文字檔沒有相機品牌，那怎麼辦？這個決定權在你，而且是逐代碼決定：<code>${exif:camera-brand|Unknown}</code> 讓沒有品牌的檔案進 <code>Unknown/</code>；<code>${exif:camera-brand|}</code> 直接把那一層資料夾收掉。完全不給 fallback？那個檔案會被<strong>記錄為失敗並略過</strong>——Mergic 不會替你的資料亂猜一個位置。會亂猜位置的整理工具，比沒有整理工具更可怕。</p>
+
+    <h2>衝突策略，一個字都沒改</h2>
+    <p>修飾器決定檔案<em>降落在哪</em>；衝突策略決定<em>那裡已經有東西時怎麼辦</em>——後者原封不動。MD5 模式下目的地永遠不會遺失檔案：內容相同就略過，內容不同就以 <code>name-2.ext</code> 落地，重跑同一次合併依然冪等。</p>
+    <p>這個分離比看起來重要，因為修飾器讓「多對一」成為可能：兩張卡裡兩個不同的 <code>IMG_0001.JPG</code>，現在可能算出同一個目的地路徑。而既有的機制處理的正是這種情況——先比雜湊、再改名——不需要學任何新規則。模擬執行也會在動到任何一個位元組之前，把每一筆 <code>來源 → 計算後路徑</code> 攤開給你看。</p>
+
+    <h2>如果你是 AWS 技術宅</h2>
+    <p>如果你熟 AWS，你一定見過這個形狀：Kinesis Data Firehose 可以掛一個 Lambda，在資料從生產者送往目的地的<em>飛行途中</em>逐批轉換。一個宣告式的轉換階段，夾在 source 和 sink 之間，附帶明確的失敗策略。這個形狀在資料工程裡存在十年了——我只是沒看到有人把它做進資料夾合併的 App，明明這需求跟 <code>DCIM/100CANON</code> 一樣古老。</p>
+    <p>那好，沒人做，那我做。先滿足自身需求再說。</p>
+
+    <div class="callout"><strong>修飾器會隨 Mergic 下一個更新出貨。</strong>背後的引擎是純粹、無 UI 的 Swift，測試涵蓋模板解析、逐代碼 fallback、多對一碰撞、冪等重跑、以及從真實檔案抽取 EXIF。自定義代碼與 hooks 已經在清單上。</div>
+    <p class="outro">Mergic 在 macOS 上安全合併資料夾 — <a href="/zh/">mergic.foldic.app</a>。</p>
+  </main>
+
+  <!-- ============================== JA ============================== -->
+  <main data-lang-page="ja" hidden>
+    <a class="back" href="/notes/">← 開発ノート</a>
+    <h1>コピー元とコピー先のあいだに、モディファイアを</h1>
+    <p class="byline">2026年8月5日 · Mergic 開発ノート</p>
+
+    <p class="lede">フォルダをもうひとつのフォルダにマージする——見た目は拍子抜けするほど簡単。そして、誰もが抱える悪夢でもあります。</p>
+    <p>複数のディレクトリをひとつにまとめるとき、あなたの戦略は何ですか？ ⌘C、⌘V で上書きして祈る？ それとも「念のため」全部の複製を残して、二度と消せない重複ファイルでディスクを埋める？ Mergic が存在するのは、「コピー」という行為が、衝突時に何が起こるかを正確に言えて初めて解決したことになるからです——何をもって衝突と判定するのか、「同じファイル」とはそもそも何なのか。</p>
+
+    <h2>コピーはパイプラインである</h2>
+    <p>衝突の扱いが片付くと、フォルダのマージはひとつの動作ではなく、段階の連なりになります。コピー元から読む、衝突時の判断をする、コピー先へ書く。そしてパイプラインとして描いた瞬間、当然の疑問が浮かびます。<em>真ん中</em>に何かを置いて、飛行中（in-flight）の各ファイルを変換できないのか——まずは、どこに着地するかを。</p>
+    <p>その中間段こそが、新しい<strong>モディファイア</strong>です。今ではキャンバス上のノードとして、コピー元とコピー先のあいだに置かれています。概念上の居場所そのままに。</p>
+    <img class="shot" src="canvas.png" alt="Mergic のキャンバス：コピー元 → モディファイア → コピー先" width="1600" height="1006" loading="lazy">
+
+    <h2>SD カード、ついに</h2>
+    <p>この機能を作らせたシナリオ：撮影済みのカメラの SD カード——あるいはポータブル SSD まるごと——を Mac に挿す。Source はカード、Destination はディスクや NAS。あいだに、これ以上ないほど単純なテンプレートを一枚：</p>
+    <p><code>${YEAR}/${MONTH}/${DAY}/${ORIGINAL_FILENAME}</code></p>
+    <p>実行すれば、いま撮ったものが撮影日ごとに自分で片付いていきます——<code>${YEAR}</code> は EXIF の <code>DateTimeOriginal</code> を優先し、なければファイル自身の日付にフォールバック。<code>${exif:camera-brand}</code> や <code>${exif:camera-model}</code> を足せば、2台のカメラの写真は飛行中に別々のフォルダへ仕分けられます。すべてが自動で定位置に収まる。眺めていて実に気持ちがいい。</p>
+    <p>エディタはコピー元フォルダの<em>実物のファイル</em>でテンプレートをライブプレビューします。ドキュメントを読んで推測するのではなく、実際に生成されるパスを、入力しながら確認できます。</p>
+    <img class="shot" src="editor.png" alt="モディファイアのエディタ：テンプレート、トークンパレット、ライブプレビュー" width="1600" height="1006" loading="lazy">
+
+    <h2>トークンが解決できないとき</h2>
+    <p>テキストファイルにカメラブランドはありません。ではどうするか？ その判断はあなたのもので、しかもトークンごとに決められます。<code>${exif:camera-brand|Unknown}</code> ならブランド不明のファイルは <code>Unknown/</code> へ。<code>${exif:camera-brand|}</code> ならその階層ごと畳まれます。フォールバックをまったく与えなければ、そのファイルは<strong>失敗として記録され、スキップされます</strong>——Mergic はあなたのデータの置き場所を勝手に推測しません。推測でファイルをばらまく整理ツールは、整理ツールがないより恐ろしい。</p>
+
+    <h2>衝突の扱いは一文字も変わらない</h2>
+    <p>モディファイアが決めるのはファイルが<em>どこに着地するか</em>。すでに何かがあるとき<em>何が起こるか</em>を決めるのは、これまでどおり衝突戦略です——そこは手つかずのまま。MD5 モードではコピー先のファイルは決して失われません。同一内容はスキップ、異なる内容は <code>name-2.ext</code> として着地し、同じマージの再実行は冪等です。</p>
+    <p>この分離は見た目以上に重要です。モディファイアは「多対一」の写像を可能にするからです。2枚のカードにある別々の <code>IMG_0001.JPG</code> が、同じ着地パスを算出することがある。それを解決するのがまさに既存の仕組み——ハッシュ比較、そしてリネーム——で、新しいルールを覚える必要はありません。ドライランは 1 バイトも動かす前に、すべての <code>元パス → 算出パス</code> を見せてくれます。</p>
+
+    <h2>AWS を話せるなら</h2>
+    <p>AWS に親しんでいるなら、この形には見覚えがあるはず。Kinesis Data Firehose は Lambda 関数で各バッチを<em>飛行中に</em>変換できます。プロデューサと配信先のあいだに置かれた、明示的な失敗ポリシーを持つ宣言的な変換ステージ。この形はデータエンジニアリングでは十年前からあるのに、フォルダマージのアプリに入れた人を見たことがありませんでした。<code>DCIM/100CANON</code> と同じくらい古いニーズなのに。</p>
+    <p>誰もやらないなら、私がやる。まずは自分のかゆいところから。</p>
+
+    <div class="callout"><strong>モディファイアは Mergic の次のアップデートで出荷されます。</strong>背後のエンジンは純粋な UI なしの Swift で、テンプレート解析、トークンごとのフォールバック、多対一の衝突、冪等な再実行、実ファイルからの EXIF 抽出までテストが揃っています。カスタムトークンとフックはリストに載っています。</div>
+    <p class="outro">Mergic は macOS でフォルダを安全にマージします — <a href="/ja/">mergic.foldic.app</a>。</p>
+  </main>
+
+  <!-- ============================== KO ============================== -->
+  <main data-lang-page="ko" hidden>
+    <a class="back" href="/notes/">← 개발 노트</a>
+    <h1>원본과 대상 사이에, 모디파이어를</h1>
+    <p class="byline">2026년 8월 5일 · Mergic 개발 노트</p>
+
+    <p class="lede">폴더를 다른 폴더로 병합하기 — 보기에는 너무나 간단합니다. 그리고 조용히, 모두의 악몽이기도 합니다.</p>
+    <p>여러 디렉터리를 하나로 합쳐야 할 때, 당신의 전략은 무엇인가요? ⌘C, ⌘V로 덮어쓰고 기도하기? 아니면 '혹시 몰라서' 전부 복사본을 남겨 두고, 평생 지우지 못할 중복 파일로 디스크를 채우기? Mergic이 존재하는 이유는, '복사'라는 일이 충돌 시 무슨 일이 일어나는지 정확히 말할 수 있어야 비로소 해결되기 때문입니다 — 무엇을 충돌로 판정하는지, '같은 파일'이란 대체 무슨 뜻인지까지.</p>
+
+    <h2>복사는 파이프라인이다</h2>
+    <p>충돌 처리가 끝나면 폴더 병합은 하나의 동작이 아니라 단계들이 됩니다. 원본에서 읽고, 충돌 시 판단하고, 대상에 씁니다. 그리고 파이프라인으로 그리는 순간 당연한 질문이 떠오릅니다. 왜 <em>중간</em>에 무언가를 두고, 비행 중(in-flight)인 각 파일을 변환할 수 없는가 — 우선은, 어디에 착지할지부터.</p>
+    <p>그 중간 단계가 새로운 <strong>모디파이어</strong>입니다. 이제 캔버스 위의 노드로, 원본과 대상 사이에 자리잡고 있습니다. 개념상 원래 있어야 할 바로 그 자리에.</p>
+    <img class="shot" src="canvas.png" alt="Mergic 캔버스: 원본 → 모디파이어 → 대상" width="1600" height="1006" loading="lazy">
+
+    <h2>SD 카드, 드디어</h2>
+    <p>이 기능을 만들게 한 시나리오: 촬영을 마친 카메라 SD 카드 — 혹은 휴대용 SSD 통째로 — 를 Mac에 꽂습니다. Source는 카드, Destination은 디스크나 NAS. 그 사이에 가장 단순한 템플릿 하나:</p>
+    <p><code>${YEAR}/${MONTH}/${DAY}/${ORIGINAL_FILENAME}</code></p>
+    <p>실행하면 방금 찍은 것들이 촬영 날짜별로 알아서 정리됩니다 — <code>${YEAR}</code>는 EXIF의 <code>DateTimeOriginal</code>을 우선 읽고, 없으면 파일 자체의 날짜로 물러납니다. <code>${exif:camera-brand}</code>나 <code>${exif:camera-model}</code>을 더하면 두 대의 카메라로 찍은 사진이 비행 중에 서로 다른 폴더로 분류됩니다. 모든 것이 자동으로 제자리를 찾아갑니다. 지켜보고 있으면 정말 기분이 좋습니다.</p>
+    <p>편집기는 원본 폴더의 <em>실제 파일</em>로 템플릿을 라이브 프리뷰합니다. 문서를 보고 추측하는 게 아니라, 입력하는 동안 실제로 만들어질 경로를 확인합니다.</p>
+    <img class="shot" src="editor.png" alt="모디파이어 편집기: 템플릿, 토큰 팔레트, 라이브 프리뷰" width="1600" height="1006" loading="lazy">
+
+    <h2>토큰을 해석할 수 없을 때</h2>
+    <p>텍스트 파일에는 카메라 브랜드가 없습니다. 그러면? 그 결정은 당신 몫이고, 토큰 단위로 정할 수 있습니다. <code>${exif:camera-brand|Unknown}</code>이면 브랜드 없는 파일은 <code>Unknown/</code>으로, <code>${exif:camera-brand|}</code>이면 그 폴더 계층 자체가 접힙니다. 폴백을 아예 주지 않으면 그 파일은 <strong>실패로 기록되고 건너뜁니다</strong> — Mergic은 당신의 데이터가 갈 곳을 멋대로 추측하지 않습니다. 추측으로 파일을 흩어 놓는 정리 도구는 정리 도구가 없는 것보다 무섭습니다.</p>
+
+    <h2>충돌 처리는 한 글자도 바뀌지 않는다</h2>
+    <p>모디파이어는 파일이 <em>어디에 착지할지</em>를 정합니다. 이미 무언가 있을 때 <em>무슨 일이 일어날지</em>는 여전히 충돌 전략이 정합니다 — 그리고 그 부분은 손대지 않았습니다. MD5 모드에서 대상 폴더는 결코 파일을 잃지 않습니다. 내용이 같으면 건너뛰고, 다르면 <code>name-2.ext</code>로 착지하며, 같은 병합을 다시 실행해도 결과는 그대로입니다.</p>
+    <p>이 분리는 보기보다 중요합니다. 모디파이어는 '다대일' 매핑을 가능하게 하니까요. 두 장의 카드에 든 서로 다른 <code>IMG_0001.JPG</code>가 이제 같은 대상 경로를 계산해 낼 수 있습니다. 그것을 해결하는 게 바로 기존 메커니즘 — 해시 비교, 그리고 이름 변경 — 이고, 새로 배울 규칙은 없습니다. 드라이 런은 단 1바이트도 움직이기 전에 모든 <code>원본 → 계산된 경로</code>를 펼쳐 보여줍니다.</p>
+
+    <h2>AWS를 할 줄 안다면</h2>
+    <p>AWS에 익숙하다면 이 모양을 본 적이 있을 겁니다. Kinesis Data Firehose는 Lambda 함수로 각 배치를 <em>비행 중에</em> 변환할 수 있습니다. 생산자와 전달 대상 사이에 놓인, 명시적 실패 정책을 가진 선언적 변환 단계. 이 모양은 데이터 엔지니어링에 십 년 전부터 있었는데, 폴더 병합 앱에 넣은 사람은 보지 못했습니다. <code>DCIM/100CANON</code>만큼이나 오래된 필요인데도요.</p>
+    <p>좋습니다. 아무도 안 만들면 내가 만듭니다. 우선 내 가려운 곳부터.</p>
+
+    <div class="callout"><strong>모디파이어는 Mergic의 다음 업데이트와 함께 출시됩니다.</strong> 그 뒤의 엔진은 순수한 UI 없는 Swift로, 템플릿 파싱, 토큰별 폴백, 다대일 충돌, 멱등 재실행, 실제 파일에서의 EXIF 추출까지 테스트가 갖춰져 있습니다. 커스텀 토큰과 훅은 목록에 올라 있습니다.</div>
+    <p class="outro">Mergic은 macOS에서 폴더를 안전하게 병합합니다 — <a href="/">mergic.foldic.app</a>.</p>
+  </main>
+
+  <footer>
+    © 2026 Mergic · <a href="/">mergic.foldic.app</a> · <a href="/notes/">Notes</a> · <a href="/privacy/">Privacy</a>
+  </footer>
+
+  <script>
+    (function () {
+      var LANGS = ["en", "zh", "ja", "ko"];
+
+      function setLang(lang, remember) {
+        if (LANGS.indexOf(lang) === -1) lang = "en";
+        document.querySelectorAll("[data-lang-page]").forEach(function (page) {
+          page.hidden = page.getAttribute("data-lang-page") !== lang;
+        });
+        document.querySelectorAll("[data-lang-tab]").forEach(function (tab) {
+          tab.setAttribute("aria-selected", String(tab.getAttribute("data-lang-tab") === lang));
+        });
+        document.documentElement.lang =
+          lang === "zh" ? "zh-Hant" : lang;
+        if (remember) {
+          try { localStorage.setItem("mergic-notes-lang", lang); } catch (e) {}
+        }
+      }
+
+      document.querySelectorAll("[data-lang-tab]").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          setLang(tab.getAttribute("data-lang-tab"), true);
+        });
+      });
+
+      var initial = null;
+      var param = new URLSearchParams(location.search).get("lang");
+      if (param && LANGS.indexOf(param) !== -1) initial = param;
+      if (!initial) {
+        try { initial = localStorage.getItem("mergic-notes-lang"); } catch (e) {}
+      }
+      if (!initial) {
+        var siteLang = null;
+        try { siteLang = localStorage.getItem("mergic-lang"); } catch (e) {}
+        if (siteLang && LANGS.indexOf(siteLang) !== -1) initial = siteLang;
+      }
+      if (!initial) {
+        var langs = navigator.languages && navigator.languages.length
+          ? navigator.languages : [navigator.language || ""];
+        for (var i = 0; i < langs.length && !initial; i++) {
+          if (/^zh/i.test(langs[i])) initial = "zh";
+          else if (/^ja/i.test(langs[i])) initial = "ja";
+          else if (/^ko/i.test(langs[i])) initial = "ko";
+          else if (/^en/i.test(langs[i])) initial = "en";
+        }
+      }
+      setLang(initial || "en", false);
+    })();
+  </script>
+</body>
+</html>
