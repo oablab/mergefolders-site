@@ -1,8 +1,49 @@
-// Renders the 1200x630 Open Graph card for a Mergic dev note.
-// Usage: swift scripts/render_og.swift <output.png>
+// Renders the 1200x630 Open Graph cards for the Mergic path-modifier note.
+// Usage: swift scripts/render_og.swift <lang: en|zh|ja|ko> <output.png>
 import AppKit
 
-let out = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "og.png"
+struct Copy {
+    let title1: String
+    let title2: String
+    let sub1: String
+    let sub2: String
+    let titleSize: CGFloat
+    let subSize: CGFloat
+}
+
+let copies: [String: Copy] = [
+    "en": Copy(
+        title1: "A modifier between",
+        title2: "source and destination.",
+        sub1: "Copying is a pipeline. Capture date, camera brand,",
+        sub2: "per-token fallbacks — same conflict guarantees.",
+        titleSize: 64, subSize: 29),
+    "zh": Copy(
+        title1: "在來源與目的地之間，",
+        title2: "放一個修飾器。",
+        sub1: "複製是一條管線。拍攝日期、相機品牌、",
+        sub2: "逐代碼 fallback——衝突保證一個字都沒改。",
+        titleSize: 62, subSize: 29),
+    "ja": Copy(
+        title1: "コピー元とコピー先の",
+        title2: "あいだに、モディファイアを。",
+        sub1: "コピーはパイプライン。撮影日、カメラブランド、",
+        sub2: "トークンごとのフォールバック——衝突の保証はそのまま。",
+        titleSize: 56, subSize: 27),
+    "ko": Copy(
+        title1: "원본과 대상 사이에,",
+        title2: "모디파이어를.",
+        sub1: "복사는 파이프라인. 촬영 날짜, 카메라 브랜드,",
+        sub2: "토큰별 폴백 — 충돌 보장은 그대로.",
+        titleSize: 62, subSize: 29),
+]
+
+let lang = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "en"
+let out = CommandLine.arguments.count > 2 ? CommandLine.arguments[2] : "og-\(lang).png"
+guard let copy = copies[lang] else {
+    fputs("unknown lang \(lang)\n", stderr)
+    exit(1)
+}
 
 let W = 1200, H = 630
 
@@ -55,14 +96,14 @@ draw("Mergic", x: 172, y: CGFloat(H) - 64 - 58,
      font: NSFont.systemFont(ofSize: 40, weight: .bold), color: ink)
 
 // Title
-let titleFont = NSFont.systemFont(ofSize: 64, weight: .bold)
-draw("A modifier between",        x: 84, y: 336, font: titleFont, color: ink, kern: -0.5)
-draw("source and destination.",   x: 84, y: 256, font: titleFont, color: ink, kern: -0.5)
+let titleFont = NSFont.systemFont(ofSize: copy.titleSize, weight: .bold)
+draw(copy.title1, x: 84, y: 336, font: titleFont, color: ink, kern: -0.5)
+draw(copy.title2, x: 84, y: 336 - copy.titleSize - 16, font: titleFont, color: ink, kern: -0.5)
 
 // Subtitle
-let subFont = NSFont.systemFont(ofSize: 29, weight: .regular)
-draw("Copying is a pipeline. Capture date, camera brand,", x: 86, y: 178, font: subFont, color: muted)
-draw("per-token fallbacks — same conflict guarantees.",    x: 86, y: 136, font: subFont, color: muted)
+let subFont = NSFont.systemFont(ofSize: copy.subSize, weight: .regular)
+draw(copy.sub1, x: 86, y: 178, font: subFont, color: muted)
+draw(copy.sub2, x: 86, y: 178 - copy.subSize - 13, font: subFont, color: muted)
 
 // URL
 draw("mergic.foldic.app/notes", x: 86, y: 68,
@@ -72,4 +113,4 @@ NSGraphicsContext.restoreGraphicsState()
 
 let png = rep.representation(using: .png, properties: [:])!
 try! png.write(to: URL(fileURLWithPath: out))
-print("wrote \(out) (\(W)x\(H))")
+print("wrote \(out) (\(W)x\(H)) [\(lang)]")
