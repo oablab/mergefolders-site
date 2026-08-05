@@ -47,6 +47,9 @@
     max-width: 900px; margin: 0 auto; padding: 16px 24px;
   }
   .brand { font-weight: 700; font-size: 17px; color: var(--accent-deep); text-decoration: none; }
+  .brandside { display: flex; align-items: baseline; gap: 18px; }
+  .navlink { font-size: 14px; color: var(--muted); text-decoration: none; }
+  .navlink:hover { color: var(--accent-deep); }
   .lang { font-size: 14px; color: var(--muted); }
   .lang a { color: var(--muted); text-decoration: none; padding: 0 6px; }
   .lang a:hover { color: var(--fg); }
@@ -110,7 +113,7 @@
 <body>
 
 <nav>
-  <a class="brand" href="./">Mergic</a>
+  <span class="brandside"><a class="brand" href="./">Mergic</a><a class="navlink" href="/notes/?lang=ko">개발 노트</a></span>
   <span class="lang"><a href="../zh/" data-lang="zh">中文</a>|<a href="../ja/" data-lang="ja">日本語</a>|<a class="active" href="./" data-lang="ko">한국어</a>|<a href="../?lang=en" data-lang="en">EN</a></span>
 </nav>
 
