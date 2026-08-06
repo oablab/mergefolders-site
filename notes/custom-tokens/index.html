@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your rule is just a function — Mergic Notes</title>
+  <meta name="description" content="The day the modifier shipped, we already knew the next question: how do I hook my own logic in? The answer is not a plugin API. It is a JavaScript function — sandboxed, with the whole EXIF object in hand.">
+  <meta property="og:title" content="Your rule is just a function">
+  <meta property="og:description" content="User-defined tokens in JavaScript — sandboxed, with the whole EXIF object in hand.">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://mergic.foldic.app/notes/custom-tokens/og-en.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://mergic.foldic.app/notes/custom-tokens/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mergic.foldic.app/notes/custom-tokens/og-en.png">
+  <style>
+    :root {
+      --accent: #7E6BC4;
+      --accent-deep: #453472;
+      --accent-tint: #E5E0F2;
+      --ink: #2E2A40;
+      --muted: #6E6880;
+      --bg: #F3F1F8;
+      --card: #EAE6F2;
+      --border: rgba(69, 52, 114, 0.16);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --accent: #9B8AD6;
+        --accent-deep: #B3A5E3;
+        --accent-tint: #2A2440;
+        --ink: #ECE9F5;
+        --muted: #A39CBB;
+        --bg: #16121F;
+        --card: #201B2D;
+        --border: rgba(155, 138, 214, 0.22);
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang TC", "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.72;
+      -webkit-font-smoothing: antialiased;
+    }
+    nav {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 860px; margin: 0 auto; padding: 0.9rem 1.5rem;
+      backdrop-filter: saturate(180%) blur(16px);
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    nav .brand { font-weight: 700; font-size: 1.05rem; text-decoration: none; color: var(--accent-deep); }
+    .lang-switch {
+      display: inline-flex; gap: 0.25rem;
+      padding: 0.22rem; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .lang-switch button {
+      font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      background: none; border: 0; cursor: pointer;
+      padding: 0.3rem 0.75rem; border-radius: 999px;
+    }
+    .lang-switch button[aria-selected="true"] {
+      background: var(--bg); color: var(--ink);
+      box-shadow: 0 1px 3px rgba(46, 42, 64, 0.14);
+    }
+    main { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    main[hidden] { display: none; }
+    .back { display: inline-block; color: var(--muted); text-decoration: none; font-size: 0.88rem; margin-bottom: 1.6rem; }
+    .back:hover { color: var(--accent-deep); }
+    h1 {
+      font-size: clamp(1.9rem, 4.6vw, 2.5rem);
+      line-height: 1.15; letter-spacing: -0.015em; font-weight: 700;
+    }
+    .byline { color: var(--muted); font-size: 0.9rem; margin-top: 0.7rem; }
+    h2 {
+      font-size: 1.3rem; font-weight: 700; letter-spacing: -0.01em;
+      margin: 2.6rem 0 0.8rem; color: var(--accent-deep);
+    }
+    p { margin-top: 1rem; font-size: 1.02rem; }
+    .lede { font-size: 1.1rem; }
+    ul { margin-top: 0.8rem; padding-left: 1.3rem; }
+    li { margin-bottom: 0.6rem; }
+    li::marker { color: var(--accent); }
+    strong { color: var(--accent-deep); }
+    code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.86em; background: var(--card);
+      border: 1px solid var(--border); border-radius: 5px; padding: 0.08em 0.35em;
+    }
+    pre {
+      margin-top: 1.2rem; padding: 1rem 1.2rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow-x: auto;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.86rem; line-height: 1.55;
+    }
+    pre code { background: none; border: none; padding: 0; font-size: inherit; }
+    .callout {
+      background: var(--accent-tint); border-radius: 14px;
+      padding: 1.1rem 1.4rem; margin-top: 2.4rem;
+      font-size: 1.02rem;
+    }
+    .callout strong { color: var(--accent-deep); }
+    .outro { color: var(--muted); font-size: 0.95rem; }
+    .outro a { color: var(--accent-deep); }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.2rem 1.5rem; text-align: center;
+      color: var(--muted); font-size: 0.88rem;
+    }
+    footer a { color: var(--accent-deep); text-decoration: none; margin: 0 0.4rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">Mergic</a>
+    <div class="lang-switch" role="tablist" aria-label="Language">
+      <button type="button" role="tab" data-lang-tab="en" aria-selected="true">EN</button>
+      <button type="button" role="tab" data-lang-tab="zh" aria-selected="false">中文</button>
+      <button type="button" role="tab" data-lang-tab="ja" aria-selected="false">日本語</button>
+      <button type="button" role="tab" data-lang-tab="ko" aria-selected="false">한국어</button>
+    </div>
+  </nav>
+
+  <!-- ============================== EN ============================== -->
+  <main data-lang-page="en">
+    <a class="back" href="/notes/">← Notes</a>
+    <h1>Your rule is just a function</h1>
+    <p class="byline">August 5, 2026 · Mergic development notes</p>
+
+    <p class="lede">The day the <a href="/notes/path-modifier/?lang=en">modifier</a> shipped, we already knew the next question: <em>how do I hook my own logic in?</em></p>
+    <p>Every tool that grows a template language meets this moment. The usual answers are a plugin API, a scripts folder, a config DSL that slowly reinvents a programming language. We picked none of them. In Mergic, a custom rule is one JavaScript function.</p>
+
+    <h2>The hook fills a token, not the whole path</h2>
+    <p>The tempting design is to let user code compute the entire destination path. We refused, for the same reason the modifier itself does not touch conflict handling: <strong>composition is the feature.</strong> A custom token slots into the template like any built-in one:</p>
+    <pre><code>${YEAR}/${custom:project|Misc}/${ORIGINAL_FILENAME}</code></pre>
+    <p>Your function returns a string — that is the token's value. It returns <code>null</code> — the token is unresolvable, and everything you already know applies: the <code>|Misc</code> fallback if you declared one, a logged failure and a skipped file if you did not. The output passes through the same sanitization that strips <code>..</code> and empty segments, so a custom rule cannot write outside the destination, not even by accident. Conflicts at the computed path? Same MD5 machinery, same <code>name-2.ext</code>, same idempotent re-runs. One new concept, zero new rules.</p>
+
+    <h2>The whole EXIF object, not our selection of it</h2>
+    <p>The built-in tokens cover capture date and camera make/model, because those are what most people sort by. But the moment you allow code, curating fields becomes a bottleneck: whatever we pick, someone needs the one we did not. So the function receives everything ImageIO can read, as one object:</p>
+    <pre><code>(file) => {
+  if (file.exif.GPS && file.exif.GPS.Latitude > 45) return "North";
+  if (file.exif.Exif && file.exif.Exif.FNumber <= 2.0) return "FastGlass";
+  return file.exif.TIFF ? file.exif.TIFF.Make : null;
+}</code></pre>
+    <p><code>file.exif</code> is the full metadata dictionary — TIFF, Exif, GPS, IPTC, every group, every attribute. Alongside it: <code>relativePath</code>, <code>name</code>, <code>dir</code>, <code>ext</code>, <code>size</code>, <code>mtime</code>, and <code>captureDate</code> with the same EXIF-first precedence the built-in date tokens use. Route by aperture, by GPS hemisphere, by a client name embedded in the folder structure — we no longer have to predict what your rule needs.</p>
+
+    <h2>The sandbox is a promise, not a limitation</h2>
+    <p>The function runs in a bare JavaScriptCore context: no filesystem, no network, no timers. It can only compute from the object we hand it. That sounds restrictive until you notice what it buys: <strong>the function is pure by construction.</strong> Dry run executes your custom tokens for real — it must, to show you real paths — and a pure function makes that safe by definition, not by documentation. There is no "please don't do side effects in your hook" paragraph in our manual, because there is nothing to do them with.</p>
+
+    <h2>The while-true problem</h2>
+    <p>Arbitrary user code means someone will eventually write an infinite loop, and a merge of a million files cannot hang on file number three. JavaScriptCore has an execution-time limit API — in a private header, which a Mac App Store app cannot touch. So the public-API version: all JS runs on a dedicated queue, each call guarded by a watchdog timeout. A call that blows the budget marks the engine dead; that token and all subsequent ones resolve as unresolvable, which flows into the fallback/failed semantics you already know. The test suite runs a <code>while (true) {}</code> token over a real merge: the merge completes, files take their fallbacks, and exactly one worker thread is sacrificed to the runaway script. The merge never hangs. That is the contract.</p>
+
+    <div class="callout"><strong>Custom tokens ship with the modifier in the next update.</strong> Defined in the modifier editor — name, function, inline compile errors, live preview against your actual files. Still on the list: external process hooks over a long-running NDJSON protocol, for rules that need a database or a model.</div>
+    <p class="outro">Mergic merges folders safely on macOS — <a href="/">mergic.foldic.app</a>.</p>
+  </main>
+
+  <!-- ============================== ZH ============================== -->
+  <main data-lang-page="zh" hidden>
+    <a class="back" href="/notes/">← 開發筆記</a>
+    <h1>你的規則，就是一個函數</h1>
+    <p class="byline">2026 年 8 月 5 日 · Mergic 開發筆記</p>
+
+    <p class="lede"><a href="/notes/path-modifier/?lang=zh">修飾器</a>發布的那一天，我們就知道下一個問題是什麼：<em>我要怎麼掛自己的邏輯進去？</em></p>
+    <p>每個長出模板語言的工具都會走到這一刻。常見的答案：plugin API、scripts 資料夾、或是一個慢慢把自己活成程式語言的設定檔 DSL。我們一個都沒選。在 Mergic，自訂規則就是一個 JavaScript 函數。</p>
+
+    <h2>Hook 填的是代碼，不是整條路徑</h2>
+    <p>最誘人的設計是讓使用者的程式碼直接算出整條目的地路徑。我們拒絕了——理由跟修飾器本身不碰衝突處理一樣：<strong>可組合性才是重點。</strong>自訂代碼跟內建代碼一樣，嵌進模板裡：</p>
+    <pre><code>${YEAR}/${custom:project|Misc}/${ORIGINAL_FILENAME}</code></pre>
+    <p>函數回傳字串——那就是代碼的值。回傳 <code>null</code>——代碼無法解析，然後你已經知道的一切照常運作：宣告過 <code>|Misc</code> 就走 fallback，沒宣告就記錄為失敗、檔案略過。輸出經過同一條 sanitize 管線，<code>..</code> 和空段一律剝除，所以自訂規則寫不出目的地之外的位置，連不小心都不行。計算後路徑上的衝突？同一套 MD5 機制、同樣的 <code>name-2.ext</code>、同樣的冪等重跑。一個新概念，零條新規則。</p>
+
+    <h2>整包 EXIF 給你，不是我們挑過的那幾樣</h2>
+    <p>內建代碼涵蓋拍攝日期和相機廠牌型號，因為大多數人按這些整理。但一旦開放程式碼，「我們幫你挑欄位」就變成瓶頸：不管挑哪些，總有人要的是沒挑到的那個。所以函數收到 ImageIO 能讀到的全部，一個物件：</p>
+    <pre><code>(file) => {
+  if (file.exif.GPS && file.exif.GPS.Latitude > 45) return "North";
+  if (file.exif.Exif && file.exif.Exif.FNumber <= 2.0) return "FastGlass";
+  return file.exif.TIFF ? file.exif.TIFF.Make : null;
+}</code></pre>
+    <p><code>file.exif</code> 是完整的 metadata 字典——TIFF、Exif、GPS、IPTC，每個 group、每個屬性。旁邊還有 <code>relativePath</code>、<code>name</code>、<code>dir</code>、<code>ext</code>、<code>size</code>、<code>mtime</code>，以及跟內建日期代碼同一套 EXIF 優先序的 <code>captureDate</code>。按光圈分、按 GPS 南北半球分、按資料夾結構裡藏的客戶名分——我們不再需要預測你的規則長什麼樣。</p>
+
+    <h2>沙盒是承諾，不是限制</h2>
+    <p>函數跑在赤裸的 JavaScriptCore context 裡：沒有檔案系統、沒有網路、沒有 timer。它只能從我們遞給它的物件做計算。聽起來很受限，直到你發現它換來什麼：<strong>函數在構造上就是純的。</strong>模擬執行會真的跑你的自訂代碼——它必須跑，才能給你看真實的路徑——而純函數讓這件事在定義上就安全，不是靠文件叮嚀。我們的說明書裡沒有「請不要在 hook 裡做 side effect」這一段，因為根本沒有東西可以讓你做。</p>
+
+    <h2>那個 while(true) 問題</h2>
+    <p>開放任意程式碼，就表示總有一天有人會寫出無窮迴圈，而一個百萬檔案的合併不能吊死在第三個檔案上。JavaScriptCore 其實有執行時間上限的 API——在 private header 裡，Mac App Store 的 app 碰不得。所以是公開 API 的版本：所有 JS 跑在專屬 queue 上，每次呼叫由 watchdog 計時。超過預算的呼叫會把引擎標記為死亡；那個代碼和之後所有代碼一律視為無法解析，流進你已經熟悉的 fallback／failed 語意。測試套件拿一個 <code>while (true) {}</code> 的代碼跑真實合併：合併正常完成、檔案各自走 fallback、恰好犧牲一條 worker thread 給那段失控的腳本。合併永遠不會被掛死。這就是契約。</p>
+
+    <div class="callout"><strong>自訂代碼隨修飾器一起在下個更新出貨。</strong>在修飾器編輯器裡定義——名稱、函數、inline 編譯錯誤、拿你真實檔案跑的即時預覽。清單上還有：長駐程序的 NDJSON 外部 hook，給需要查資料庫或跑模型的規則。</div>
+    <p class="outro">Mergic 在 macOS 上安全合併資料夾 — <a href="/zh/">mergic.foldic.app</a>。</p>
+  </main>
+
+  <!-- ============================== JA ============================== -->
+  <main data-lang-page="ja" hidden>
+    <a class="back" href="/notes/">← 開発ノート</a>
+    <h1>あなたのルールは、ただの関数</h1>
+    <p class="byline">2026年8月5日 · Mergic 開発ノート</p>
+
+    <p class="lede"><a href="/notes/path-modifier/?lang=ja">モディファイア</a>を出したその日、次の質問はもう分かっていました。<em>自分のロジックはどう組み込むのか？</em></p>
+    <p>テンプレート言語を持ったツールは、必ずこの瞬間に行き当たります。よくある答えは、プラグイン API、scripts フォルダ、あるいは少しずつプログラミング言語になっていく設定 DSL。私たちはどれも選びませんでした。Mergic では、カスタムルールは JavaScript の関数ひとつです。</p>
+
+    <h2>フックが埋めるのはトークン、パス全体ではない</h2>
+    <p>ユーザーのコードに目的地パス全体を計算させる設計は魅力的です。私たちは断りました。モディファイア自身が衝突処理に触れないのと同じ理由で——<strong>合成できることこそが機能だから。</strong>カスタムトークンは組み込みトークンと同じようにテンプレートに収まります：</p>
+    <pre><code>${YEAR}/${custom:project|Misc}/${ORIGINAL_FILENAME}</code></pre>
+    <p>関数が文字列を返せば、それがトークンの値。<code>null</code> を返せばトークンは解決不能——そしてあなたが既に知っているすべてが適用されます。<code>|Misc</code> を宣言していればフォールバック、なければ失敗として記録されスキップ。出力は <code>..</code> と空セグメントを剥がす同じサニタイズ管路を通るので、カスタムルールがコピー先の外に書くことは、うっかりでも不可能です。計算されたパスでの衝突？ 同じ MD5 機構、同じ <code>name-2.ext</code>、同じ冪等な再実行。新しい概念はひとつ、新しいルールはゼロ。</p>
+
+    <h2>EXIF はまるごと。私たちの選んだ数項目ではなく</h2>
+    <p>組み込みトークンは撮影日とカメラのメーカー・機種をカバーします。ほとんどの人がそれで整理するからです。しかしコードを許した瞬間、「こちらでフィールドを選んであげる」はボトルネックになります。何を選んでも、選ばなかったものを必要とする人が現れる。だから関数には ImageIO が読めるすべてを、ひとつのオブジェクトとして渡します：</p>
+    <pre><code>(file) => {
+  if (file.exif.GPS && file.exif.GPS.Latitude > 45) return "North";
+  if (file.exif.Exif && file.exif.Exif.FNumber <= 2.0) return "FastGlass";
+  return file.exif.TIFF ? file.exif.TIFF.Make : null;
+}</code></pre>
+    <p><code>file.exif</code> は完全なメタデータ辞書——TIFF、Exif、GPS、IPTC、全グループ、全属性。あわせて <code>relativePath</code>、<code>name</code>、<code>dir</code>、<code>ext</code>、<code>size</code>、<code>mtime</code>、そして組み込みの日付トークンと同じ EXIF 優先順位を持つ <code>captureDate</code>。絞り値で振り分ける、GPS の南北で分ける、フォルダ構造に埋まったクライアント名で分ける——あなたのルールが何を必要とするか、私たちが予測する必要はもうありません。</p>
+
+    <h2>サンドボックスは約束であって、制限ではない</h2>
+    <p>関数は素の JavaScriptCore コンテキストで動きます。ファイルシステムなし、ネットワークなし、タイマーなし。渡されたオブジェクトから計算することしかできません。窮屈に聞こえますが、それが何と引き換えかに気づくと違って見えます。<strong>関数は構造上、純粋なのです。</strong>ドライランはカスタムトークンを実際に実行します——本物のパスを見せるにはそうするしかない——そして純関数はそれを、ドキュメントの注意書きではなく定義によって安全にします。私たちのマニュアルに「フックで副作用を起こさないでください」という段落はありません。起こす手段がそもそもないからです。</p>
+
+    <h2>while(true) 問題</h2>
+    <p>任意のコードを許せば、いつか誰かが無限ループを書きます。そして百万ファイルのマージが 3 番目のファイルで止まるわけにはいきません。JavaScriptCore には実行時間制限の API があります——プライベートヘッダの中に。Mac App Store のアプリは触れません。そこで公開 API 版：すべての JS は専用キューで動き、各呼び出しはウォッチドッグが見張ります。予算を超えた呼び出しはエンジンを死亡としてマークし、そのトークンと以降のすべては解決不能として、既知のフォールバック／失敗の意味論に流れ込みます。テストスイートは <code>while (true) {}</code> トークンで実際のマージを走らせます：マージは完走し、ファイルはフォールバックを取り、暴走スクリプトに捧げられるのはワーカースレッド 1 本だけ。マージは決してハングしません。それが契約です。</p>
+
+    <div class="callout"><strong>カスタムトークンはモディファイアとともに次のアップデートで出荷されます。</strong>モディファイアのエディタで定義——名前、関数、インラインのコンパイルエラー、実ファイルでのライブプレビュー。リストにはまだ：データベースやモデルが必要なルールのための、長駐プロセスによる NDJSON 外部フック。</div>
+    <p class="outro">Mergic は macOS でフォルダを安全にマージします — <a href="/ja/">mergic.foldic.app</a>。</p>
+  </main>
+
+  <!-- ============================== KO ============================== -->
+  <main data-lang-page="ko" hidden>
+    <a class="back" href="/notes/">← 개발 노트</a>
+    <h1>당신의 규칙은 그저 함수 하나</h1>
+    <p class="byline">2026년 8월 5일 · Mergic 개발 노트</p>
+
+    <p class="lede"><a href="/notes/path-modifier/?lang=ko">모디파이어</a>를 내놓은 그날, 다음 질문이 무엇일지 이미 알고 있었습니다. <em>내 로직은 어떻게 끼워 넣지?</em></p>
+    <p>템플릿 언어를 갖게 된 도구는 반드시 이 순간을 만납니다. 흔한 답은 플러그인 API, scripts 폴더, 혹은 서서히 프로그래밍 언어가 되어 가는 설정 DSL. 우리는 어느 것도 고르지 않았습니다. Mergic에서 커스텀 규칙은 JavaScript 함수 하나입니다.</p>
+
+    <h2>훅이 채우는 것은 토큰, 경로 전체가 아니다</h2>
+    <p>사용자 코드가 대상 경로 전체를 계산하게 하는 설계는 유혹적입니다. 우리는 거절했습니다. 모디파이어 자신이 충돌 처리를 건드리지 않는 것과 같은 이유로 — <strong>조합 가능성이 곧 기능이기 때문입니다.</strong> 커스텀 토큰은 내장 토큰과 똑같이 템플릿에 끼워집니다:</p>
+    <pre><code>${YEAR}/${custom:project|Misc}/${ORIGINAL_FILENAME}</code></pre>
+    <p>함수가 문자열을 반환하면 그것이 토큰의 값. <code>null</code>을 반환하면 토큰은 해석 불능 — 그리고 이미 아는 모든 것이 그대로 적용됩니다. <code>|Misc</code>를 선언했다면 폴백, 아니면 실패로 기록되고 파일은 건너뜁니다. 출력은 <code>..</code>과 빈 세그먼트를 벗겨내는 동일한 정제 파이프라인을 지나므로, 커스텀 규칙은 실수로라도 대상 폴더 밖에 쓸 수 없습니다. 계산된 경로에서의 충돌? 같은 MD5 메커니즘, 같은 <code>name-2.ext</code>, 같은 멱등 재실행. 새 개념 하나, 새 규칙 제로.</p>
+
+    <h2>EXIF 전체를 드립니다. 우리가 고른 몇 가지가 아니라</h2>
+    <p>내장 토큰은 촬영 날짜와 카메라 제조사·기종을 다룹니다. 대부분 그걸로 정리하니까요. 하지만 코드를 허용하는 순간 '우리가 필드를 골라 주는' 방식은 병목이 됩니다. 무엇을 고르든, 누군가는 고르지 않은 그것이 필요합니다. 그래서 함수는 ImageIO가 읽을 수 있는 전부를 하나의 객체로 받습니다:</p>
+    <pre><code>(file) => {
+  if (file.exif.GPS && file.exif.GPS.Latitude > 45) return "North";
+  if (file.exif.Exif && file.exif.Exif.FNumber <= 2.0) return "FastGlass";
+  return file.exif.TIFF ? file.exif.TIFF.Make : null;
+}</code></pre>
+    <p><code>file.exif</code>는 완전한 메타데이터 사전입니다 — TIFF, Exif, GPS, IPTC, 모든 그룹, 모든 속성. 곁에는 <code>relativePath</code>, <code>name</code>, <code>dir</code>, <code>ext</code>, <code>size</code>, <code>mtime</code>, 그리고 내장 날짜 토큰과 같은 EXIF 우선순위를 따르는 <code>captureDate</code>. 조리개로 나누고, GPS 남북으로 나누고, 폴더 구조에 숨은 클라이언트 이름으로 나누고 — 당신의 규칙에 무엇이 필요할지 우리가 더는 예측하지 않아도 됩니다.</p>
+
+    <h2>샌드박스는 약속이지 제한이 아니다</h2>
+    <p>함수는 맨몸의 JavaScriptCore 컨텍스트에서 돕니다. 파일시스템 없음, 네트워크 없음, 타이머 없음. 건네받은 객체로 계산하는 것만 가능합니다. 답답하게 들리지만, 그것이 무엇과 맞바꾼 것인지 알면 다르게 보입니다. <strong>함수는 구조적으로 순수합니다.</strong> 드라이 런은 커스텀 토큰을 실제로 실행합니다 — 진짜 경로를 보여 주려면 그래야 하니까 — 그리고 순수 함수는 그것을 문서의 당부가 아닌 정의로 안전하게 만듭니다. 우리 매뉴얼에는 '훅에서 부수 효과를 일으키지 마세요'라는 문단이 없습니다. 일으킬 수단 자체가 없기 때문입니다.</p>
+
+    <h2>while(true) 문제</h2>
+    <p>임의의 코드를 허용하면 언젠가 누군가는 무한 루프를 씁니다. 그리고 백만 파일의 병합이 세 번째 파일에서 멈출 수는 없습니다. JavaScriptCore에는 실행 시간 제한 API가 있습니다 — 프라이빗 헤더 안에. Mac App Store 앱은 건드릴 수 없습니다. 그래서 공개 API 버전: 모든 JS는 전용 큐에서 돌고, 각 호출은 워치독이 지킵니다. 예산을 넘긴 호출은 엔진을 사망으로 표시하고, 그 토큰과 이후 전부는 해석 불능으로 — 이미 익숙한 폴백/실패 의미론으로 흘러갑니다. 테스트 스위트는 <code>while (true) {}</code> 토큰으로 실제 병합을 돌립니다. 병합은 완주하고, 파일들은 폴백을 타고, 폭주 스크립트에 바쳐지는 것은 워커 스레드 하나뿐. 병합은 결코 멈추지 않습니다. 그것이 계약입니다.</p>
+
+    <div class="callout"><strong>커스텀 토큰은 모디파이어와 함께 다음 업데이트로 출시됩니다.</strong> 모디파이어 편집기에서 정의 — 이름, 함수, 인라인 컴파일 오류, 실제 파일로 도는 라이브 프리뷰. 목록에는 아직: 데이터베이스나 모델이 필요한 규칙을 위한, 장수 프로세스 NDJSON 외부 훅.</div>
+    <p class="outro">Mergic은 macOS에서 폴더를 안전하게 병합합니다 — <a href="/">mergic.foldic.app</a>.</p>
+  </main>
+
+  <footer>
+    © 2026 Mergic · <a href="/">mergic.foldic.app</a> · <a href="/notes/">Notes</a> · <a href="/privacy/">Privacy</a>
+  </footer>
+
+  <script>
+    (function () {
+      var LANGS = ["en", "zh", "ja", "ko"];
+
+      function setLang(lang, remember) {
+        if (LANGS.indexOf(lang) === -1) lang = "en";
+        document.querySelectorAll("[data-lang-page]").forEach(function (page) {
+          page.hidden = page.getAttribute("data-lang-page") !== lang;
+        });
+        document.querySelectorAll("[data-lang-tab]").forEach(function (tab) {
+          tab.setAttribute("aria-selected", String(tab.getAttribute("data-lang-tab") === lang));
+        });
+        document.documentElement.lang =
+          lang === "zh" ? "zh-Hant" : lang;
+        if (remember) {
+          try { localStorage.setItem("mergic-notes-lang", lang); } catch (e) {}
+        }
+      }
+
+      document.querySelectorAll("[data-lang-tab]").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          setLang(tab.getAttribute("data-lang-tab"), true);
+        });
+      });
+
+      var initial = null;
+      var param = new URLSearchParams(location.search).get("lang");
+      if (param && LANGS.indexOf(param) !== -1) initial = param;
+      if (!initial) {
+        try { initial = localStorage.getItem("mergic-notes-lang"); } catch (e) {}
+      }
+      if (!initial) {
+        var siteLang = null;
+        try { siteLang = localStorage.getItem("mergic-lang"); } catch (e) {}
+        if (siteLang && LANGS.indexOf(siteLang) !== -1) initial = siteLang;
+      }
+      if (!initial) {
+        var langs = navigator.languages && navigator.languages.length
+          ? navigator.languages : [navigator.language || ""];
+        for (var i = 0; i < langs.length && !initial; i++) {
+          if (/^zh/i.test(langs[i])) initial = "zh";
+          else if (/^ja/i.test(langs[i])) initial = "ja";
+          else if (/^ko/i.test(langs[i])) initial = "ko";
+          else if (/^en/i.test(langs[i])) initial = "en";
+        }
+      }
+      setLang(initial || "en", false);
+    })();
+  </script>
+</body>
+</html>
